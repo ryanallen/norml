@@ -1,5 +1,3 @@
-require('dotenv').config();  // Load the secret password from the .env file
-
-const {MongoClient} = require('mongodb');  // Get the tool that helps us talk to MongoDB
-
-module.exports = () => new MongoClient(process.env.MONGO_URI).connect();  // Give other files a way to connect to our database 
+require('dotenv').config();  // Read the password from .env file
+const {MongoClient} = require('mongodb');  // Get the MongoDB connection function from the mongodb package
+module.exports = () => new MongoClient(process.env.MONGO_URI).connect();  // Export a function that makes a new connection when called 
