@@ -52,4 +52,8 @@ export class StaticGeneratorPort {
   async writeOutput(html) {
     throw new Error('Method not implemented');
   }
+
+  async writeFile(filename, content) {
+    throw new Error('StaticGeneratorPort.writeFile() must be implemented');
+  }
 } 
