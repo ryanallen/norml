@@ -9,6 +9,7 @@ export function formatIndexPage(content) {
 </head>
 <body>
   <h1>${content.title}</h1>
+  <p>Version: ${content.version}</p>
   <button id="check">Check Status</button>
   <pre id="result">Click button to check status</pre>
 

@@ -6,6 +6,7 @@ import { formatIndexPage } from '../../presenters/index.js';
 test('Index presenter formats HTML correctly', () => {
   const mockContent = {
     title: 'Test Title',
+    version: '0.0.1-test',
     features: [
       {
         name: 'Test Feature',
@@ -22,6 +23,7 @@ test('Index presenter formats HTML correctly', () => {
   
   // Check content insertion
   assert.ok(html.includes(mockContent.title));
+  assert.ok(html.includes(mockContent.version));
   assert.ok(html.includes(mockContent.features[0].endpoint));
   
   // Check required elements
