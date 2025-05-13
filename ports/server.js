@@ -35,7 +35,7 @@ const server = http.createServer(async (req, res) => {
         error: 'Not Found',
         message: `No handler found for ${req.method} ${req.url}`
       }));
-    }
+  }
   } catch (error) {
     // Handle any errors that occur during request processing
     console.error('[Server Port] Error handling request:', error);

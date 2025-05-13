@@ -42,4 +42,14 @@ export class ConfigPort {
   set(key, value) {
     throw new Error('Method not implemented');
   }
+}
+
+export class StaticGeneratorPort {
+  async generateStatic(content) {
+    throw new Error('Method not implemented');
+  }
+  
+  async writeOutput(html) {
+    throw new Error('Method not implemented');
+  }
 } 

@@ -12,7 +12,8 @@
     "test:watch": "node --test --watch tests/**/*.test.js",
     "test:coverage": "node --test --experimental-test-coverage tests/**/*.test.js",
     "start": "node ports/server.js",
-    "dev": "node --watch ports/server.js"
+    "dev": "node --watch ports/server.js",
+    "build": "node scripts/build.js"
   },
   "engines": {
     "node": ">=18.0.0"

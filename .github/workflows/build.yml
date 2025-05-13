@@ -1,0 +1,26 @@
+name: Generate Static HTML
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - run: npm ci
+      - name: Generate static HTML
+        run: node scripts/build.js
+        env:
+          API_BASE: ${{ secrets.API_BASE }}
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: 'index.html'
+          message: 'chore: auto-generate static HTML'
+          default_author: github_actions 
