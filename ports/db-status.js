@@ -11,7 +11,7 @@ export async function handleRequest(req, res) {
   if (req.method === 'GET' && req.url === '/db') {
     const statusData = await checkDbStatus(dbAdapter);
     const response = formatSuccessResponse(statusData);
-    const statusCode = getStatusCode();
+    const statusCode = getStatusCode(statusData);
     
     // Send the response back to the browser as JSON
     res.writeHead(statusCode, { 'Content-Type': 'application/json' });
