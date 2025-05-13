@@ -9,15 +9,23 @@
     h1 { border-bottom: 1px solid #ddd; padding-bottom: 0.5rem; }
     .status { padding: 1rem; margin: 1rem 0; border-radius: 4px; }
     .passed { background: #d4edda; color: #155724; }
+    .failed { background: #f8d7da; color: #721c24; }
+    .loading { background: #fff3cd; color: #856404; }
     .rhombic { margin: 2rem 0; }
     .rhombic li { margin-bottom: 0.5rem; }
+    button { padding: 0.5rem 1rem; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #0069d9; }
   </style>
 </head>
 <body>
   <h1>NORML</h1>
-  <div class="status passed">
-    <h2>MongoDB Connection: ✓</h2>
-    <p>Last tested successfully via GitHub Actions</p>
+  <div id="status-container" class="status loading">
+    <h2>MongoDB Connection: Checking...</h2>
+    <p>Connecting to database...</p>
+  </div>
+
+  <div>
+    <button onclick="checkStatus()">Check Connection</button>
   </div>
 
   <div class="rhombic">
@@ -34,5 +42,52 @@
   </div>
 
   <p><a href="https://github.com/ryanallen/norml">View on GitHub</a></p>
+
+  <script>
+    // Function to check MongoDB status
+    async function checkStatus() {
+      const statusContainer = document.getElementById('status-container');
+      
+      // Show loading state
+      statusContainer.className = 'status loading';
+      statusContainer.innerHTML = '<h2>MongoDB Connection: Checking...</h2><p>Connecting to database...</p>';
+      
+      try {
+        // Call the Cloudflare Worker
+        const response = await fetch('/api/db-status');
+        const data = await response.json();
+        
+        if (data.status === 'connected') {
+          // Show success state
+          statusContainer.className = 'status passed';
+          statusContainer.innerHTML = `
+            <h2>MongoDB Connection: ✓</h2>
+            <p>Server: ${data.server}</p>
+            <p>Last checked: ${new Date(data.time).toLocaleString()}</p>
+            <p>${data.details}</p>
+          `;
+        } else {
+          // Show error state
+          statusContainer.className = 'status failed';
+          statusContainer.innerHTML = `
+            <h2>MongoDB Connection: ✗</h2>
+            <p>Error: ${data.message}</p>
+            <p>Last checked: ${new Date(data.time).toLocaleString()}</p>
+          `;
+        }
+      } catch (error) {
+        // Show error state
+        statusContainer.className = 'status failed';
+        statusContainer.innerHTML = `
+          <h2>MongoDB Connection: ✗</h2>
+          <p>Error: ${error.message}</p>
+          <p>Could not connect to API</p>
+        `;
+      }
+    }
+    
+    // Check status on page load
+    window.onload = checkStatus;
+  </script>
 </body>
 </html> 

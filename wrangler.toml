@@ -1,0 +1,15 @@
+[site]
+bucket = "."
+
+# Enable Cloudflare Pages Functions
+[build]
+command = ""
+
+[build.environment]
+CLOUDFLARE_PAGES = "true"
+
+# Define environment variables for your worker
+[vars]
+# These will be populated in the Cloudflare dashboard
+# MONGODB_APP_ID = "your-mongodb-app-id"
+# MONGODB_API_KEY = "your-mongodb-api-key" 
