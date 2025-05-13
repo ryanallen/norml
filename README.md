@@ -1,13 +1,13 @@
 # norml
 
-## RHOMBIC Architecture
-- **R**ESTful API design
-- **H**exagonal core architecture
-- **O**rthogonal UI
-- **M**icroservices architecture
-- **B**usiness logic isolation
-- **I**ntegrated testing
-- **C**ontinuous deployment
+## RHOMBUS Architecture
+- **R**estful APIs
+- **H**exagonal ports & adapters
+- **O**ptimal test coverage
+- **M**icroservices
+- **B**ackend logic isolation
+- **U**I presenters
+- **S**hipping continuously
 
 ## Testing
 
