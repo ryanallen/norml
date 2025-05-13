@@ -142,3 +142,6 @@ npm test
 
 Tests run automatically on GitHub Actions for all pull requests and pushes to main branch.
 
+## Status Page
+The MongoDB connection status page is available at [norml.pages.dev](https://norml.pages.dev).
+
