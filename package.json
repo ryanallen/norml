@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test tests/index.js",
-    "start": "node ports/api.js"
+    "start": "node ports/health.js"
   },
   "dependencies": {
     "dotenv": "^16.3.1",

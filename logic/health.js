@@ -1,21 +1,21 @@
-// Business logic module - Contains core application logic
+// This file checks if our database is working
 
-// Check if MongoDB database is available
+// Try to connect to the database and tell us if it worked
 export async function checkDbStatus(dbAdapter) {
   try {
-    // Connect to MongoDB
+    // Get a connection to the database
     const client = await dbAdapter();
-    // Verify connection with ping command
+    // Say "ping" to the database - if it answers, it's working
     await client.db('admin').command({ ping: 1 });
-    // Close connection to avoid leaks
+    // Always close the connection when we're done
     await client.close();
-    // Return success data
+    // Tell everyone it's working
     return {
       available: true,
       checkedAt: new Date()
     };
   } catch (error) {
-    // Return failure data with error information
+    // Something went wrong - tell everyone it's not working
     return {
       available: false,
       checkedAt: new Date(),
