@@ -1,13 +1,20 @@
 {
   "name": "norml",
   "version": "0.1.0",
+  "description": "NORML - Node REST Microservice Library",
   "type": "module",
+  "main": "ports/server.js",
+  "exports": {
+    ".": "./ports/server.js"
+  },
   "scripts": {
-    "test": "node --test tests/index.js",
+    "test": "node --test tests/**/*.test.js",
     "start": "node ports/server.js"
   },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
-    "dotenv": "^16.3.1",
-    "mongodb": "^6.3.0"
+    "dotenv": "^16.3.1"
   }
-}
+} 

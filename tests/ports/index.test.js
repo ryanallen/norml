@@ -1,28 +1,17 @@
 // Test index page port
 import test from 'node:test';
-import assert from 'node:assert';
+import assert from 'node:assert/strict';
 import { handleRequest } from '../../ports/index.js';
 
-// Create a mock version of the port that doesn't depend on other modules
-async function createMockHandler() {
-  return async (req, res) => {
-    if (req.method === 'GET' && (req.url === '/' || req.url === '/index.html')) {
-      const mockContent = {
-        title: 'Test Title',
-        version: '0.0.1-test',
-        features: [{ name: 'Test Feature', endpoint: '/test' }]
-      };
-      
-      res.writeHead(200, { 'Content-Type': 'text/html' });
-      res.end(`<!DOCTYPE html><title>${mockContent.title}</title>Version: ${mockContent.version}`);
-      return true;
-    }
-    return false;
-  };
-}
-
-test('Index port handles requests correctly', async (t) => {
-  const mockHandler = await createMockHandler();
+test('Index port', async (t) => {
+  // Mock functions
+  const mockGetVersion = () => '0.1.0-alpha.1';
+  const mockGetPageContent = () => ({
+    title: 'Database Status',
+    features: [{ name: 'Check Status', endpoint: '/db' }]
+  });
+  const mockFormatIndexPage = (content) => 
+    `<!DOCTYPE html><title>${content.title}</title>Version: ${content.version}`;
 
   await t.test('handles root path', async () => {
     const req = {
@@ -44,14 +33,14 @@ test('Index port handles requests correctly', async (t) => {
       }
     };
     
-    const handled = await mockHandler(req, res);
+    const handled = await handleRequest(req, res, mockGetVersion, mockGetPageContent, mockFormatIndexPage);
     
     assert.strictEqual(handled, true);
     assert.strictEqual(responseCode, 200);
     assert.deepStrictEqual(responseHeaders, { 'Content-Type': 'text/html' });
-    assert.ok(responseBody.includes('<!DOCTYPE html>'));
-    assert.ok(responseBody.includes('Test Title'));
-    assert.ok(responseBody.includes('0.0.1-test'));
+    assert.match(responseBody, /<!DOCTYPE html>/);
+    assert.match(responseBody, /<title>Database Status<\/title>/);
+    assert.match(responseBody, /Version: 0\.1\.0-alpha\.1/);
   });
 
   await t.test('handles index.html path', async () => {
@@ -74,14 +63,14 @@ test('Index port handles requests correctly', async (t) => {
       }
     };
     
-    const handled = await mockHandler(req, res);
+    const handled = await handleRequest(req, res, mockGetVersion, mockGetPageContent, mockFormatIndexPage);
     
     assert.strictEqual(handled, true);
     assert.strictEqual(responseCode, 200);
     assert.deepStrictEqual(responseHeaders, { 'Content-Type': 'text/html' });
-    assert.ok(responseBody.includes('<!DOCTYPE html>'));
-    assert.ok(responseBody.includes('Test Title'));
-    assert.ok(responseBody.includes('0.0.1-test'));
+    assert.match(responseBody, /<!DOCTYPE html>/);
+    assert.match(responseBody, /<title>Database Status<\/title>/);
+    assert.match(responseBody, /Version: 0\.1\.0-alpha\.1/);
   });
 
   await t.test('ignores other paths', async () => {
@@ -95,7 +84,7 @@ test('Index port handles requests correctly', async (t) => {
       end: () => {}
     };
     
-    const handled = await mockHandler(req, res);
+    const handled = await handleRequest(req, res, mockGetVersion, mockGetPageContent, mockFormatIndexPage);
     assert.strictEqual(handled, false);
   });
 }); 

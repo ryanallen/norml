@@ -6,9 +6,9 @@ export async function checkDbStatus(dbAdapter) {
   try {
     console.log('[DB Check] Attempting to connect...');
     client = await dbAdapter();
-    console.log('[DB Check] Connected, running ping command...');
-    await client.db('admin').command({ ping: 1 });
-    console.log('[DB Check] Ping successful');
+    console.log('[DB Check] Connected, checking status...');
+    await client.db().command({ status: 1 });
+    console.log('[DB Check] Status check successful');
     return {
       available: true,
       checkedAt: new Date()

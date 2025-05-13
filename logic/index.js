@@ -1,7 +1,7 @@
 // Index page logic
 export function getPageContent() {
   return {
-    title: 'MongoDB Status',
+    title: 'Database Status',
     features: [
       {
         name: 'Database Status',

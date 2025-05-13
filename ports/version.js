@@ -1,15 +1,19 @@
-// Version information endpoint
-import { getVersion } from '../logic/version.js';
-import { formatVersion } from '../presenters/version.js';
+// Version endpoint
+import { getVersion as defaultGetVersion } from '../logic/version.js';
 
-export async function handleRequest(req, res) {
+export async function handleRequest(req, res, getVersion = defaultGetVersion) {
   if (req.method === 'GET' && req.url === '/version') {
-    const version = getVersion();
-    const response = formatVersion(version);
-    
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(response));
-    return true;
+    try {
+      const version = getVersion();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ version }));
+      return true;
+    } catch (error) {
+      console.error('[Version Port] Error:', error);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Internal server error' }));
+      return true;
+    }
   }
   return false;
 } 

@@ -16,8 +16,11 @@ test('Presenter formats status data', () => {
   assert.strictEqual(response.time, now.toISOString());
 });
 
-// Check if we get 200 OK for success
-test('Presenter returns success status code', () => {
-  const code = getStatusCode();
-  assert.strictEqual(code, 200);
+// Check if we get correct status codes
+test('Presenter returns correct status codes', () => {
+  const successData = { available: true };
+  const failureData = { available: false };
+  
+  assert.strictEqual(getStatusCode(successData), 200);
+  assert.strictEqual(getStatusCode(failureData), 503);
 }); 
