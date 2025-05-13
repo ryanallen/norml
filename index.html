@@ -6,57 +6,22 @@
   <title>NORML - MongoDB Status</title>
 </head>
 <body>
-  <h1>NORML</h1>
-  <div class="status">
-    <h2>MongoDB Connection Status</h2>
-    <button id="runDbCheck">Check Database Status</button>
-    <div id="results">
-      <p>Click button to check MongoDB connection status</p>
-    </div>
-  </div>
-
-  <div class="rhombus">
-    <h2>RHOMBUS Architecture</h2>
-    <ul>
-      <li><strong>R</strong>estful APIs</li>
-      <li><strong>H</strong>exagonal ports & adapters</li>
-      <li><strong>O</strong>ptimal test coverage</li>
-      <li><strong>M</strong>icroservices</li>
-      <li><strong>B</strong>ackend logic isolation</li>
-      <li><strong>U</strong>I presenters</li>
-      <li><strong>S</strong>hipping continuously</li>
-    </ul>
-  </div>
-
-  <p><a href="https://github.com/ryanallen/norml">View on GitHub</a></p>
+  <h1>MongoDB Status</h1>
+  <button id="check">Check Status</button>
+  <pre id="result">Click button to check status</pre>
 
   <script>
-    document.getElementById('runDbCheck').addEventListener('click', async () => {
-      const button = document.getElementById('runDbCheck');
-      const results = document.getElementById('results');
-      
-      // Disable button while checking
-      button.disabled = true;
-      results.innerHTML = '<p>Checking connection...</p>';
+    document.getElementById('check').addEventListener('click', async () => {
+      const result = document.getElementById('result');
+      result.textContent = 'Checking...';
       
       try {
-        const response = await fetch('/db-status/db');
+        const response = await fetch('/db');
         const data = await response.json();
-        results.innerHTML = `
-          <p>Status: ${data.status}</p>
-          <p>Message: ${data.message}</p>
-          <p>Last checked: ${data.time}</p>
-          ${data.error ? `<p>Error: ${data.error}</p>` : ''}
-        `;
+        result.textContent = JSON.stringify(data, null, 2);
       } catch (error) {
-        results.innerHTML = `
-          <p>Status: error</p>
-          <p>Message: Could not connect to database status endpoint</p>
-        `;
+        result.textContent = 'Error checking status';
       }
-      
-      // Re-enable button
-      button.disabled = false;
     });
   </script>
 </body>
