@@ -104,32 +104,38 @@ test('API Call Handler', async (t) => {
 
   // Test handler functionality
   await t.test('should generate executable handler code', async () => {
-    const handlerCode = getApiCallHandler();
+    const handlerCode = getApiCallHandler().trim();
     
-    // Create function from code
-    const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-    const callApi = new AsyncFunction('fetch', `return ${handlerCode}`)();
-    
-    // Mock fetch for testing
-    const mockFetch = async (endpoint) => {
-      if (endpoint === '/success') {
-        return {
-          ok: true,
-          json: async () => ({ data: 'test' })
-        };
+    // Create a context with our mock fetch
+    const context = {
+      fetch: async (endpoint) => {
+        if (endpoint === '/success') {
+          return {
+            ok: true,
+            json: async () => ({ data: 'test' })
+          };
+        }
+        throw new Error('Network error');
       }
-      throw new Error('Network error');
     };
 
+    // Create and execute the function in our context
+    const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+    const fn = new AsyncFunction('fetch', `
+      ${handlerCode}
+      return callApi;
+    `).bind(context);
+    const callApi = await fn(context.fetch);
+
     // Test successful call
-    const successResult = await callApi.call({ fetch: mockFetch }, '/success');
+    const successResult = await callApi('/success');
     assert.deepEqual(successResult, {
       success: true,
       data: { data: 'test' }
     });
 
     // Test failed call
-    const errorResult = await callApi.call({ fetch: mockFetch }, '/error');
+    const errorResult = await callApi('/error');
     assert.equal(errorResult.success, false);
     assert.equal(errorResult.error, 'Network error');
   });
