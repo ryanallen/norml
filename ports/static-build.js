@@ -1,5 +1,3 @@
-import { prepareStaticContent } from '../logic/static-build.js';
-
 export async function generateStatic(content, config, presenter, generator) {
   try {
     // Replace API base URL in content
