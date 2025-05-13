@@ -1,24 +1,16 @@
 // Test version endpoint
-import test from 'node:test';
+import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { handleRequest } from '../../ports/version.js';
 
-test('Version endpoint', async (t) => {
-  // Mock modules
-  const mockGetVersion = () => '0.1.0-alpha.1';
-  const mockFormatVersion = (version) => JSON.stringify({ version });
+describe('Version Port', () => {
+  let mockResponse;
 
-  await t.test('handles GET /version', async () => {
-    const req = {
-      method: 'GET',
-      url: '/version'
-    };
+  it('handles GET /api/version successfully', async () => {
+    const mockGetVersion = async () => '1.0.0';
+    let responseCode, responseHeaders, responseBody;
     
-    let responseCode;
-    let responseHeaders;
-    let responseBody;
-    
-    const res = {
+    mockResponse = {
       writeHead: (code, headers) => {
         responseCode = code;
         responseHeaders = headers;
@@ -27,61 +19,32 @@ test('Version endpoint', async (t) => {
         responseBody = body;
       }
     };
-    
-    const handled = await handleRequest(req, res, mockGetVersion, mockFormatVersion);
+
+    const req = {
+      method: 'GET',
+      url: '/api/version'
+    };
+
+    const handled = await handleRequest(req, mockResponse, mockGetVersion);
     
     assert.strictEqual(handled, true);
     assert.strictEqual(responseCode, 200);
     assert.deepStrictEqual(responseHeaders, { 'Content-Type': 'application/json' });
-    assert.deepStrictEqual(JSON.parse(responseBody), { version: '0.1.0-alpha.1' });
+    
+    const data = JSON.parse(responseBody);
+    assert.strictEqual(data.status, 'available');
+    assert.strictEqual(data.version, '1.0.0');
+    assert.ok(data.time);
   });
 
-  await t.test('ignores non-GET requests', async () => {
-    const req = {
-      method: 'POST',
-      url: '/version'
-    };
-    
-    const res = {
-      writeHead: () => {},
-      end: () => {}
-    };
-    
-    const handled = await handleRequest(req, res, mockGetVersion, mockFormatVersion);
-    assert.strictEqual(handled, false);
-  });
-
-  await t.test('ignores wrong paths', async () => {
-    const req = {
-      method: 'GET',
-      url: '/other'
-    };
-    
-    const res = {
-      writeHead: () => {},
-      end: () => {}
-    };
-    
-    const handled = await handleRequest(req, res, mockGetVersion, mockFormatVersion);
-    assert.strictEqual(handled, false);
-  });
-
-  await t.test('handles errors', async () => {
-    // Mock the version logic to throw an error
-    const mockGetVersion = () => {
+  it('handles version errors correctly', async () => {
+    const mockGetVersion = async () => {
       throw new Error('Version error');
     };
 
-    const req = {
-      method: 'GET',
-      url: '/version'
-    };
+    let responseCode, responseHeaders, responseBody;
     
-    let responseCode;
-    let responseHeaders;
-    let responseBody;
-    
-    const res = {
+    mockResponse = {
       writeHead: (code, headers) => {
         responseCode = code;
         responseHeaders = headers;
@@ -90,14 +53,45 @@ test('Version endpoint', async (t) => {
         responseBody = body;
       }
     };
-    
-    const handled = await handleRequest(req, res, mockGetVersion, mockFormatVersion);
+
+    const req = {
+      method: 'GET',
+      url: '/api/version'
+    };
+
+    const handled = await handleRequest(req, mockResponse, mockGetVersion);
     
     assert.strictEqual(handled, true);
-    assert.strictEqual(responseCode, 500);
+    assert.strictEqual(responseCode, 503);
     assert.deepStrictEqual(responseHeaders, { 'Content-Type': 'application/json' });
     
-    const response = JSON.parse(responseBody);
-    assert.strictEqual(response.error, 'Internal server error');
+    const data = JSON.parse(responseBody);
+    assert.strictEqual(data.status, 'error');
+    assert.strictEqual(data.error, 'Version error');
+    assert.ok(data.time);
+  });
+
+  it('ignores non-GET requests', async () => {
+    const mockGetVersion = async () => '1.0.0';
+    
+    const req = {
+      method: 'POST',
+      url: '/api/version'
+    };
+
+    const handled = await handleRequest(req, mockResponse, mockGetVersion);
+    assert.strictEqual(handled, false);
+  });
+
+  it('ignores other paths', async () => {
+    const mockGetVersion = async () => '1.0.0';
+    
+    const req = {
+      method: 'GET',
+      url: '/other'
+    };
+
+    const handled = await handleRequest(req, mockResponse, mockGetVersion);
+    assert.strictEqual(handled, false);
   });
 }); 

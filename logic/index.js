@@ -4,6 +4,7 @@ export function getPageContent() {
     title: 'Database Status',
     features: [
       {
+        id: 'db-status',
         name: 'Database Status',
         endpoint: '/db',
         states: {
@@ -13,8 +14,9 @@ export function getPageContent() {
         }
       },
       {
+        id: 'version-info',
         name: 'Version',
-        endpoint: '/version',
+        endpoint: '/api/version',
         states: {
           checking: { type: 'loading', message: 'Loading...' },
           success: { type: 'success' },

@@ -30,14 +30,37 @@ export class IndexPresenter extends Presenter {
   <script>
     async function checkStatus(feature) {
       const element = document.getElementById(feature.id);
+      
+      function updateElement(state, content) {
+        element.className = 'status ' + state;
+        element.textContent = typeof content === 'object' ? 
+          JSON.stringify(content, null, 2) : content;
+      }
+
       try {
         const response = await fetch(feature.endpoint);
+        if (!response.ok) {
+          throw new Error(\`HTTP error! status: \${response.status}\`);
+        }
         const data = await response.json();
-        element.textContent = JSON.stringify(data, null, 2);
-        element.className = 'status ' + (data.status === 'available' ? 'success' : 'error');
+        
+        // Handle different endpoint formats
+        if (feature.endpoint === '/api/version') {
+          updateElement('success', data);
+        } else if (feature.endpoint === '/db') {
+          if (data.status === 'available') {
+            updateElement('success', data);
+          } else if (data.status === 'error') {
+            updateElement('error', data);
+          } else {
+            updateElement('error', { error: 'Unexpected status: ' + data.status });
+          }
+        }
       } catch (error) {
-        element.textContent = error.message;
-        element.className = 'status error';
+        console.error('API call failed:', error);
+        updateElement('error', { 
+          error: error.message || 'Failed to fetch status'
+        });
       }
     }
 
