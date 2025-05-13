@@ -20,13 +20,13 @@ If successful, you'll see:
 ```
 Connecting to MongoDB...
 Connected to MongoDB ✓
-Server: norml.tlxea13.mongodb.net
-Connection closed ✓
-✓ MongoDB connection (X.XXs)
+Server: ac-mudywoz-shard-00-02.tlxea13.mongodb.net:27017
+✔ MongoDB connection (650.8167ms)
 ℹ tests 1
-ℹ pass 1
-ℹ skip 0
-ℹ fail 0
 ℹ cancelled 0
-ℹ duration_ms XX.XX
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 829.9972
 ```
+
+Tests automatically run on GitHub Actions for all pull requests and pushes to main branch.
