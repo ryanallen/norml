@@ -1,97 +1,38 @@
 // Test version endpoint
-import { describe, it } from 'node:test';
-import assert from 'node:assert/strict';
-import { handleRequest } from '../../ports/version.js';
+import { strict as assert } from 'assert';
+import { test } from 'node:test';
+import { handleVersionRequest } from '../../ports/version.js';
 
-describe('Version Port', () => {
-  let mockResponse;
-
-  it('handles GET /api/version successfully', async () => {
-    const mockGetVersion = async () => '1.0.0';
-    let responseCode, responseHeaders, responseBody;
-    
-    mockResponse = {
-      writeHead: (code, headers) => {
-        responseCode = code;
-        responseHeaders = headers;
+test('Version Port', async (t) => {
+  await t.test('handles version request', async () => {
+    const req = { method: 'GET', url: '/api/version' };
+    const res = {
+      writeHead: (status, headers) => {
+        assert.equal(status, 200);
+        assert.deepEqual(headers, { 'Content-Type': 'application/json' });
       },
-      end: (body) => {
-        responseBody = body;
+      end: (data) => {
+        const result = JSON.parse(data);
+        assert.equal(result.status, 'success');
+        assert(result.data.version);
+        assert(result.data.name);
       }
     };
-
-    const req = {
-      method: 'GET',
-      url: '/api/version'
-    };
-
-    const handled = await handleRequest(req, mockResponse, mockGetVersion);
-    
-    assert.strictEqual(handled, true);
-    assert.strictEqual(responseCode, 200);
-    assert.deepStrictEqual(responseHeaders, { 'Content-Type': 'application/json' });
-    
-    const data = JSON.parse(responseBody);
-    assert.strictEqual(data.status, 'available');
-    assert.strictEqual(data.version, '1.0.0');
-    assert.ok(data.time);
+    const handled = await handleVersionRequest(req, res);
+    assert.equal(handled, true);
   });
 
-  it('handles version errors correctly', async () => {
-    const mockGetVersion = async () => {
-      throw new Error('Version error');
-    };
-
-    let responseCode, responseHeaders, responseBody;
-    
-    mockResponse = {
-      writeHead: (code, headers) => {
-        responseCode = code;
-        responseHeaders = headers;
-      },
-      end: (body) => {
-        responseBody = body;
-      }
-    };
-
-    const req = {
-      method: 'GET',
-      url: '/api/version'
-    };
-
-    const handled = await handleRequest(req, mockResponse, mockGetVersion);
-    
-    assert.strictEqual(handled, true);
-    assert.strictEqual(responseCode, 503);
-    assert.deepStrictEqual(responseHeaders, { 'Content-Type': 'application/json' });
-    
-    const data = JSON.parse(responseBody);
-    assert.strictEqual(data.status, 'error');
-    assert.strictEqual(data.error, 'Version error');
-    assert.ok(data.time);
+  await t.test('ignores other paths', async () => {
+    const req = { method: 'GET', url: '/other' };
+    const res = {};
+    const handled = await handleVersionRequest(req, res);
+    assert.equal(handled, false);
   });
 
-  it('ignores non-GET requests', async () => {
-    const mockGetVersion = async () => '1.0.0';
-    
-    const req = {
-      method: 'POST',
-      url: '/api/version'
-    };
-
-    const handled = await handleRequest(req, mockResponse, mockGetVersion);
-    assert.strictEqual(handled, false);
-  });
-
-  it('ignores other paths', async () => {
-    const mockGetVersion = async () => '1.0.0';
-    
-    const req = {
-      method: 'GET',
-      url: '/other'
-    };
-
-    const handled = await handleRequest(req, mockResponse, mockGetVersion);
-    assert.strictEqual(handled, false);
+  await t.test('ignores non-GET methods', async () => {
+    const req = { method: 'POST', url: '/api/version' };
+    const res = {};
+    const handled = await handleVersionRequest(req, res);
+    assert.equal(handled, false);
   });
 }); 

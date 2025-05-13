@@ -15,7 +15,7 @@ export class DatabasePort {
 
 export class VersionPort {
   async getVersion() {
-    throw new Error('Method not implemented');
+    throw new Error('VersionPort.getVersion() must be implemented');
   }
   
   async getBuildInfo() {

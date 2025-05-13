@@ -1,18 +1,15 @@
 // Version endpoint
-import { getVersion as defaultGetVersion } from '../logic/version.js';
-import { presenter } from '../presenters/version.js';
+import { getVersion } from '../logic/version.js';
+import { VersionAdapter } from '../adapters/version.js';
 
-export async function handleRequest(req, res, getVersion = defaultGetVersion) {
+const versionAdapter = new VersionAdapter();
+
+export async function handleVersionRequest(req, res) {
   if (req.method === 'GET' && req.url === '/api/version') {
-    try {
-      const version = await getVersion();
-      presenter.present(res, version);
-      return true;
-    } catch (error) {
-      console.error('[Version Port] Error:', error);
-      presenter.presentError(res, error);
-      return true;
-    }
+    const result = await getVersion(versionAdapter);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(result));
+    return true;
   }
   return false;
 } 

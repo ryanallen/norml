@@ -1,7 +1,7 @@
 import { URL } from 'node:url';
 import { handleRequest as handleIndex } from './index.js';
-import { handleRequest as handleDbStatus } from './db-status.js';
-import { handleRequest as handleVersion } from './version.js';
+import { handleRequest as handleDb } from './db-status.js';
+import { handleVersionRequest as handleVersion } from './version.js';
 
 export class Router {
   constructor() {
@@ -30,7 +30,7 @@ export const router = new Router();
 
 // Register routes
 router.addRoute('GET', '/', handleIndex);
-router.addRoute('GET', '/api/status', handleDbStatus);
+router.addRoute('GET', '/api/status', handleDb);
 router.addRoute('GET', '/api/version', handleVersion);
 
 export default router; 

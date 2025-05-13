@@ -1,30 +1,24 @@
 // Test version adapter
-import { describe, it } from 'node:test';
-import assert from 'node:assert';
+import { strict as assert } from 'assert';
+import { test } from 'node:test';
 import { VersionAdapter } from '../../adapters/version.js';
 
-describe('VersionAdapter', () => {
-  it('should implement VersionPort interface', async () => {
-    const version = new VersionAdapter();
-    assert.strictEqual(typeof version.getVersion, 'function');
-    assert.strictEqual(typeof version.getBuildInfo, 'function');
+const version = new VersionAdapter();
+
+test('VersionAdapter', async (t) => {
+  await t.test('should implement VersionPort interface', () => {
+    assert(version.getVersion);
+    assert(version.getBuildInfo);
   });
 
-  it('should load package.json', async () => {
-    const version = new VersionAdapter();
-    const pkg = await version.loadPackageJson();
-    assert(pkg);
-    assert.strictEqual(pkg.name, 'norml');
+  await t.test('should get version info', async () => {
+    const info = await version.getVersion();
+    assert.equal(typeof info, 'object');
+    assert.equal(info.version, '0.1.0');
+    assert.equal(info.name, 'norml');
   });
 
-  it('should get version', async () => {
-    const version = new VersionAdapter();
-    const ver = await version.getVersion();
-    assert.strictEqual(ver, '0.1.0');
-  });
-
-  it('should get build info', async () => {
-    const version = new VersionAdapter();
+  await t.test('should get build info', async () => {
     const info = await version.getBuildInfo();
     assert(info.version);
     assert(info.node);
