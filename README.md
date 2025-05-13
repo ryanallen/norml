@@ -13,7 +13,7 @@
 
 To test MongoDB connection:
 ```bash
-python t-db.py
+node t-db.js
 ```
 
 If successful, you'll see:
