@@ -9,14 +9,25 @@ import { formatSuccessResponse, getStatusCode } from '../presenters/db-status.js
 export async function handleRequest(req, res) {
   // Only handle GET requests to /db
   if (req.method === 'GET' && req.url === '/db') {
-    const statusData = await checkDbStatus(dbAdapter);
-    const response = formatSuccessResponse(statusData);
-    const statusCode = getStatusCode(statusData);
-    
-    // Send the response back to the browser as JSON
-    res.writeHead(statusCode, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(response));
-    return true;
+    console.log(`[${new Date().toISOString()}] Received DB status check request`);
+    try {
+      const statusData = await checkDbStatus(dbAdapter);
+      const response = formatSuccessResponse(statusData);
+      const statusCode = getStatusCode(statusData);
+      
+      console.log(`[${new Date().toISOString()}] Sending response with status ${statusCode}`);
+      res.writeHead(statusCode, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(response));
+      return true;
+    } catch (error) {
+      console.error(`[${new Date().toISOString()}] Port handler error:`, error);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ 
+        status: 'error',
+        error: 'Internal server error'
+      }));
+      return true;
+    }
   }
   return false;
 } 

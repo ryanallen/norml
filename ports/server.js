@@ -4,18 +4,21 @@
 
 import http from 'node:http';
 import { handleRequest as handleDbStatus } from './db-status.js';
+import { handleRequest as handleVersion } from './version.js';
 import { handleRequest as handleServerLogic } from '../logic/server.js';
 
 // Create an HTTP server that can accept requests from browsers
 const server = http.createServer(async (req, res) => {
-  // First try the database status endpoint
-  // This is a special case that handles its own response writing
+  // Try each endpoint handler in order
+  if (await handleVersion(req, res)) {
+    return;
+  }
+  
   if (await handleDbStatus(req, res)) {
     return;
   }
 
   // For all other URLs, ask the server logic what to do
-  // The logic returns an object telling us what response to send
   const response = await handleServerLogic(req);
   
   // Write the response back to the browser
