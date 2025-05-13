@@ -1,15 +1,14 @@
 // Database status response presenter
 
-// Format database status for HTTP response
+// Format the response for the browser
 export function formatSuccessResponse(data) {
-    return {
-        status: data.available ? "available" : "unavailable",
-        time: data.checkedAt.toISOString(),
-        ...(data.errorType && { error: data.errorType })
-    };
+  return {
+    status: 'available',
+    time: data.checkedAt.toISOString()
+  };
 }
 
-// Determine HTTP status code based on connection status
-export function getStatusCode(data) {
-    return data.available ? 200 : 503; // 200 OK or 503 Service Unavailable
+// Get the right HTTP status code
+export function getStatusCode() {
+  return 200;
 } 

@@ -14,14 +14,9 @@
     document.getElementById('check').addEventListener('click', async () => {
       const result = document.getElementById('result');
       result.textContent = 'Checking...';
-      
-      try {
-        const response = await fetch('/db');
-        const data = await response.json();
-        result.textContent = JSON.stringify(data, null, 2);
-      } catch (error) {
-        result.textContent = 'Error checking status';
-      }
+      const response = await fetch('/db');
+      const data = await response.json();
+      result.textContent = JSON.stringify(data, null, 2);
     });
   </script>
 </body>

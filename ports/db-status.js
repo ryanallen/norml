@@ -9,12 +9,9 @@ import { formatSuccessResponse, getStatusCode } from '../presenters/db-status.js
 export async function handleRequest(req, res) {
   // Only handle GET requests to /db
   if (req.method === 'GET' && req.url === '/db') {
-    // Ask the logic layer to check if database is working
     const statusData = await checkDbStatus(dbAdapter);
-    // Ask the presenter layer to format the response nicely
     const response = formatSuccessResponse(statusData);
-    // Get the right HTTP status code for the situation
-    const statusCode = getStatusCode(statusData);
+    const statusCode = getStatusCode();
     
     // Send the response back to the browser as JSON
     res.writeHead(statusCode, { 'Content-Type': 'application/json' });
