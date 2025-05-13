@@ -6,24 +6,30 @@ import { join, dirname } from 'path';
 import { rm } from 'fs/promises';
 
 const adapter = new StaticGeneratorAdapter();
-const testDir = join(process.cwd(), 'test-output');
+const baseTestDir = join(process.cwd(), 'test-output');
 
 test('StaticGeneratorAdapter', async (t) => {
-  // Setup test directory
-  t.beforeEach(() => {
+  let testDir;
+  let testCount = 0;
+
+  // Setup test directory before each test
+  t.beforeEach(async () => {
+    testCount++;
+    testDir = join(baseTestDir, `test-${testCount}`);
     try {
+      await rm(testDir, { recursive: true, force: true }).catch(() => {});
       mkdirSync(testDir, { recursive: true });
     } catch (error) {
-      // Directory may already exist
+      console.error('Setup failed:', error);
     }
   });
 
-  // Cleanup after tests
-  t.afterEach(() => {
+  // Cleanup after all tests
+  t.after(async () => {
     try {
-      rmSync(testDir, { recursive: true });
+      await rm(baseTestDir, { recursive: true, force: true }).catch(() => {});
     } catch (error) {
-      // Directory may not exist
+      console.error('Final cleanup failed:', error);
     }
   });
 
@@ -41,7 +47,6 @@ test('StaticGeneratorAdapter', async (t) => {
     
     const content = readFileSync(testFile, 'utf8');
     assert.equal(content, '<html>test</html>');
-    await rm(testFile);
   });
 
   await t.test('should write output with correct path', async () => {
@@ -51,16 +56,12 @@ test('StaticGeneratorAdapter', async (t) => {
     
     const content = readFileSync(testFile, 'utf8');
     assert.equal(content, '<html>output</html>');
-    await rm(testFile);
   });
 
   await t.test('should handle write errors gracefully', async () => {
     const testFile = join(testDir, 'invalid', 'path', 'file.html');
-    // Create the directory structure first
-    mkdirSync(dirname(testFile), { recursive: true });
     const result = await adapter.writeFile(testFile, '<html>test</html>');
     assert.equal(result, true);
-    await rm(testFile);
   });
 
   await t.test('should pass through content in generateStatic', async () => {
@@ -70,7 +71,11 @@ test('StaticGeneratorAdapter', async (t) => {
   });
 
   await t.test('should handle writeOutput errors', async () => {
-    const result = await adapter.writeOutput('test content', '');
-    assert.equal(result, false);
+    try {
+      await adapter.writeOutput('test content', null);
+      assert.fail('Should have thrown an error');
+    } catch (error) {
+      assert(error.message.includes('No path provided'));
+    }
   });
 }); 

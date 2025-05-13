@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Database Status</title>
+  <title>undefined</title>
   <style>
     body { font-family: sans-serif; max-width: 800px; margin: 2em auto; padding: 0 1em; }
     .status { padding: 1em; border-radius: 4px; margin: 1em 0; }
@@ -13,18 +13,11 @@
   </style>
 </head>
 <body>
-  <h1>Database Status</h1>
+  <h1>undefined</h1>
   
     <div class="feature">
-      <h2>Database Status</h2>
-      <div id="db-status" class="status loading">
-        Checking...
-      </div>
-    </div>
-  
-    <div class="feature">
-      <h2>Version</h2>
-      <div id="version-info" class="status loading">
+      <h2>Test</h2>
+      <div id="undefined" class="status loading">
         Loading...
       </div>
     </div>
@@ -69,9 +62,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       
-        checkStatus({"id":"db-status","name":"Database Status","endpoint":"https://norml-459701.uc.r.appspot.com/api/status","states":{"checking":{"type":"loading","message":"Checking..."},"success":{"type":"success"},"error":{"type":"error","message":"Error checking status: {error}"}}});
-      
-        checkStatus({"id":"version-info","name":"Version","endpoint":"https://norml-459701.uc.r.appspot.com/api/version","states":{"checking":{"type":"loading","message":"Loading..."},"success":{"type":"success"},"error":{"type":"error","message":"Error loading version"}}});
+        checkStatus({"endpoint":"undefined/api/test","name":"Test","states":{"checking":{"type":"loading","message":"Loading..."},"success":{"type":"success"},"error":{"type":"error","message":"Error loading test"}}});
       
     });
   </script>

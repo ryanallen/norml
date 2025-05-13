@@ -12,9 +12,14 @@ A Node.js application implementing RHOMBUS architecture:
 ## Quick Start
 
 ```bash
-npm install
+# Clean install dependencies (recommended for reproducible builds)
+npm ci
+
+# Start the application
 npm start
 ```
+
+> Note: We use `npm ci` instead of `npm install` to ensure consistent installations across all environments. This command is faster and more reliable as it strictly follows the package-lock.json file.
 
 ## Architecture Overview
 

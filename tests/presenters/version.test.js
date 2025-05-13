@@ -1,78 +1,50 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { VersionPresenter } from '../../presenters/version.js';
+import { TestResponse } from '../utils/test-response.js';
 
 describe('VersionPresenter', () => {
-  let presenter;
-  let mockResponse;
+  const presenter = new VersionPresenter();
+  const VERSION = '1.0.0';
+  const ERROR = new Error('Version not found');
 
   it('formats version correctly', () => {
-    presenter = new VersionPresenter();
-    const result = presenter.format('1.0.0');
-    
+    const result = presenter.format(VERSION);
     assert.strictEqual(result.status, 'available');
-    assert.strictEqual(result.version, '1.0.0');
-    assert.ok(result.time); // Should be ISO timestamp
+    assert.strictEqual(result.version, VERSION);
+    assert.ok(result.time);
   });
 
   it('formats error correctly', () => {
-    presenter = new VersionPresenter();
-    const error = new Error('Version not found');
-    const result = presenter.formatError(error);
-    
+    const result = presenter.formatError(ERROR);
     assert.strictEqual(result.status, 'error');
-    assert.strictEqual(result.error, 'Version not found');
-    assert.ok(result.time); // Should be ISO timestamp
+    assert.strictEqual(result.error, ERROR.message);
+    assert.ok(result.time);
   });
 
   it('presents version with 200 status', () => {
-    presenter = new VersionPresenter();
-    let responseCode, responseHeaders, responseBody;
-    
-    mockResponse = {
-      writeHead: (code, headers) => {
-        responseCode = code;
-        responseHeaders = headers;
-      },
-      end: (body) => {
-        responseBody = body;
-      }
-    };
+    const res = new TestResponse();
+    presenter.present(res, VERSION);
 
-    presenter.present(mockResponse, '1.0.0');
-
-    assert.strictEqual(responseCode, 200);
-    assert.deepStrictEqual(responseHeaders, { 'Content-Type': 'application/json' });
+    assert.strictEqual(res.statusCode, 200);
+    assert.deepStrictEqual(res.headers, { 'Content-Type': 'application/json' });
     
-    const data = JSON.parse(responseBody);
+    const data = res.getBodyJson();
     assert.strictEqual(data.status, 'available');
-    assert.strictEqual(data.version, '1.0.0');
+    assert.strictEqual(data.version, VERSION);
     assert.ok(data.time);
   });
 
-  it('presents error with 503 status', () => {
-    presenter = new VersionPresenter();
-    let responseCode, responseHeaders, responseBody;
-    
-    mockResponse = {
-      writeHead: (code, headers) => {
-        responseCode = code;
-        responseHeaders = headers;
-      },
-      end: (body) => {
-        responseBody = body;
-      }
-    };
+  it('presents error with 500 status', () => {
+    const res = new TestResponse();
+    presenter.presentError(res, ERROR);
 
-    const error = new Error('Version not found');
-    presenter.presentError(mockResponse, error);
-
-    assert.strictEqual(responseCode, 503);
-    assert.deepStrictEqual(responseHeaders, { 'Content-Type': 'application/json' });
+    assert.strictEqual(res.statusCode, 500);
+    assert.deepStrictEqual(res.headers, { 'Content-Type': 'application/json' });
     
-    const data = JSON.parse(responseBody);
+    const data = res.getBodyJson();
     assert.strictEqual(data.status, 'error');
-    assert.strictEqual(data.error, 'Version not found');
+    assert.strictEqual(data.error, ERROR.message);
     assert.ok(data.time);
   });
 }); 

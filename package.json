@@ -3,10 +3,7 @@
   "version": "0.1.0",
   "description": "NORML - Node REST Microservice Library",
   "type": "module",
-  "main": "ports/server.js",
-  "exports": {
-    ".": "./ports/server.js"
-  },
+  "main": "./ports/server.js",
   "scripts": {
     "test": "node --test --experimental-test-coverage tests/**/*.test.js",
     "test:watch": "node --test --watch tests/**/*.test.js",

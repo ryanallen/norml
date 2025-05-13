@@ -2,80 +2,31 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { handleRequest } from '../../ports/index.js';
+import { TestResponse } from '../utils/test-response.js';
 
 test('Index port', async (t) => {
-  await t.test('handles root path', async () => {
-    const req = {
-      method: 'GET',
-      url: '/'
-    };
-    
-    let responseCode;
-    let responseHeaders;
-    let responseBody;
-    
-    const res = {
-      writeHead: (code, headers) => {
-        responseCode = code;
-        responseHeaders = headers;
-      },
-      end: (body) => {
-        responseBody = body;
-      }
-    };
-    
-    const handled = await handleRequest(req, res);
-    
+  const checkValidResponse = (res, handled) => {
     assert.strictEqual(handled, true);
-    assert.strictEqual(responseCode, 200);
-    assert.deepStrictEqual(responseHeaders, { 'Content-Type': 'text/html' });
-    assert.match(responseBody, /<!DOCTYPE html>/);
-    assert.match(responseBody, /<title>Database Status<\/title>/);
-    assert.match(responseBody, /Version/);
-  });
+    assert.strictEqual(res.statusCode, 200);
+    assert.deepStrictEqual(res.headers, { 'Content-Type': 'text/html' });
+    assert.match(res.body, /<!DOCTYPE html>/);
+    assert.match(res.body, /<title>Database Status<\/title>/);
+    assert.match(res.body, /Version/);
+  };
 
-  await t.test('handles index.html path', async () => {
-    const req = {
-      method: 'GET',
-      url: '/index.html'
-    };
+  await t.test('handles index paths', async () => {
+    const paths = ['/', '/index.html'];
     
-    let responseCode;
-    let responseHeaders;
-    let responseBody;
-    
-    const res = {
-      writeHead: (code, headers) => {
-        responseCode = code;
-        responseHeaders = headers;
-      },
-      end: (body) => {
-        responseBody = body;
-      }
-    };
-    
-    const handled = await handleRequest(req, res);
-    
-    assert.strictEqual(handled, true);
-    assert.strictEqual(responseCode, 200);
-    assert.deepStrictEqual(responseHeaders, { 'Content-Type': 'text/html' });
-    assert.match(responseBody, /<!DOCTYPE html>/);
-    assert.match(responseBody, /<title>Database Status<\/title>/);
-    assert.match(responseBody, /Version/);
+    for (const url of paths) {
+      const res = new TestResponse();
+      const handled = await handleRequest({ method: 'GET', url }, res);
+      checkValidResponse(res, handled);
+    }
   });
 
   await t.test('ignores other paths', async () => {
-    const req = {
-      method: 'GET',
-      url: '/other'
-    };
-    
-    const res = {
-      writeHead: () => {},
-      end: () => {}
-    };
-    
-    const handled = await handleRequest(req, res);
+    const res = new TestResponse();
+    const handled = await handleRequest({ method: 'GET', url: '/other' }, res);
     assert.strictEqual(handled, false);
   });
 }); 

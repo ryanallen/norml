@@ -4,6 +4,7 @@ import { ConfigPort } from '../ports/interfaces.js';
 export class ConfigAdapter extends ConfigPort {
   constructor() {
     super();
+    this.store = {};
     this.load();
   }
 
@@ -24,11 +25,15 @@ export class ConfigAdapter extends ConfigPort {
   }
 
   get(key) {
-    return process.env[key];
+    return this.store[key] ?? process.env[key];
   }
 
   set(key, value) {
-    process.env[key] = value;
+    if (value === undefined) {
+      delete this.store[key];
+    } else {
+      this.store[key] = value;
+    }
   }
 }
 

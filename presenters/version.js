@@ -4,7 +4,7 @@ export class VersionPresenter extends Presenter {
   format(version) {
     return {
       status: 'available',
-      version: version,
+      version,
       time: new Date().toISOString()
     };
   }
@@ -17,14 +17,14 @@ export class VersionPresenter extends Presenter {
     };
   }
 
-  present(res, version) {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(this.format(version)));
+  present(response, version) {
+    response.writeHead(200, { 'Content-Type': 'application/json' });
+    response.end(JSON.stringify(this.format(version)));
   }
 
-  presentError(res, error) {
-    res.writeHead(503, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(this.formatError(error)));
+  presentError(response, error) {
+    response.writeHead(500, { 'Content-Type': 'application/json' });
+    response.end(JSON.stringify(this.formatError(error)));
   }
 }
 
