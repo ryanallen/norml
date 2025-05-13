@@ -29,6 +29,7 @@ test('StaticGeneratorAdapter', async (t) => {
   await t.test('should implement StaticGeneratorPort interface', () => {
     assert(adapter.writeFile);
     assert(adapter.writeOutput);
+    assert(adapter.generateStatic);
   });
 
   await t.test('should write file successfully', async () => {
@@ -55,7 +56,7 @@ test('StaticGeneratorAdapter', async (t) => {
 
   await t.test('should handle write errors gracefully', async () => {
     // Try to write to an invalid path
-    const result = await adapter.writeFile('/invalid/path/file.html', 'test');
+    const result = await adapter.writeFile(join('invalid', 'path', 'file.html'), 'test');
     assert.equal(result, false);
   });
 }); 
