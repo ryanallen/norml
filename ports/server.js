@@ -23,8 +23,8 @@ const server = http.createServer(async (req, res) => {
   res.end(response.body);
 });
 
-// Start listening for browser requests on port 3000 (or whatever PORT env var says)
-const port = process.env.PORT || 3000;
+// Start listening for browser requests on port 3001 (or whatever PORT env var says)
+const port = process.env.PORT || 3001;
 server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
 }); 
