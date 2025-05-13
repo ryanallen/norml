@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Status</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 2em auto; padding: 0 1em; }
+    .status { padding: 1em; border-radius: 4px; margin: 1em 0; }
+    .loading { background: #f5f5f5; }
+    .error { background: #fee; }
+    .success { background: #efe; }
+  </style>
+</head>
+<body>
+  <h1>Database Status</h1>
+  
+    <div class="feature">
+      <h2>Database Status</h2>
+      <div id="db-status" class="status loading">
+        Checking...
+      </div>
+    </div>
+  
+    <div class="feature">
+      <h2>Version</h2>
+      <div id="version-info" class="status loading">
+        Loading...
+      </div>
+    </div>
+  
+
+  <script>
+    async function checkStatus(feature) {
+      const element = document.getElementById(feature.id);
+      
+      function updateElement(state, content) {
+        element.className = 'status ' + state;
+        element.textContent = typeof content === 'object' ? 
+          JSON.stringify(content, null, 2) : content;
+      }
+
+      try {
+        const response = await fetch(feature.endpoint);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        
+        // Handle different endpoint formats
+        if (feature.endpoint === '/api/version') {
+          updateElement('success', data);
+        } else if (feature.endpoint === '/db') {
+          if (data.status === 'available') {
+            updateElement('success', data);
+          } else if (data.status === 'error') {
+            updateElement('error', data);
+          } else {
+            updateElement('error', { error: 'Unexpected status: ' + data.status });
+          }
+        }
+      } catch (error) {
+        console.error('API call failed:', error);
+        updateElement('error', { 
+          error: error.message || 'Failed to fetch status'
+        });
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      
+        checkStatus({"id":"db-status","name":"Database Status","endpoint":"/db","states":{"checking":{"type":"loading","message":"Checking..."},"success":{"type":"success"},"error":{"type":"error","message":"Error checking status: {error}"}}});
+      
+        checkStatus({"id":"version-info","name":"Version","endpoint":"https://norml-459701.uc.r.appspot.com/api/version","states":{"checking":{"type":"loading","message":"Loading..."},"success":{"type":"success"},"error":{"type":"error","message":"Error loading version"}}});
+      
+    });
+  </script>
+</body>
+</html>
