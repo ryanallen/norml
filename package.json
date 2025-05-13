@@ -1,8 +1,12 @@
 {
   "name": "norml",
   "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --test t-db.js"
+  },
   "dependencies": {
-    "mongodb": "^6.3.0",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "mongodb": "^6.3.0"
   }
 } 
