@@ -1,7 +1,15 @@
-// Version information presenter
-export function formatVersion(version) {
-  if (version === undefined) {
-    throw new Error('Version is required');
+import { Presenter } from '../ports/interfaces.js';
+
+export class VersionPresenter extends Presenter {
+  format(version) {
+    return { version };
   }
-  return { version };
-} 
+
+  formatError(error) {
+    return {
+      error: error.message
+    };
+  }
+}
+
+export const presenter = new VersionPresenter(); 

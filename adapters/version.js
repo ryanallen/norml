@@ -1,18 +1,38 @@
 // Version information adapter
 // This adapter provides access to our single source of truth for version info
-import { readFileSync } from 'node:fs';
+import { VersionPort } from '../ports/interfaces.js';
+import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { config } from './config.js';
 
-export function getPackageVersion(fsModule = { readFileSync }) {
-  try {
-    console.log('[Version Adapter] Reading version from package.json');
-    const packagePath = join(process.cwd(), 'package.json');
-    const packageJson = JSON.parse(fsModule.readFileSync(packagePath, 'utf8'));
-    const version = `${packageJson.version}-alpha.1`;
-    console.log('[Version Adapter] Found version:', version);
-    return version;
-  } catch (error) {
-    console.error('[Version Adapter] Error reading version:', error);
-    throw new Error('Failed to read version information');
+export class VersionAdapter extends VersionPort {
+  constructor() {
+    super();
+    this.packageJson = null;
   }
-} 
+
+  async loadPackageJson() {
+    if (!this.packageJson) {
+      const content = await readFile(join(process.cwd(), 'package.json'), 'utf-8');
+      this.packageJson = JSON.parse(content);
+    }
+    return this.packageJson;
+  }
+
+  async getVersion() {
+    const pkg = await this.loadPackageJson();
+    return pkg.version;
+  }
+
+  async getBuildInfo() {
+    return {
+      version: await this.getVersion(),
+      node: process.version,
+      environment: config.get('NODE_ENV') || 'development',
+      timestamp: new Date().toISOString()
+    };
+  }
+}
+
+// Export a singleton instance
+export const version = new VersionAdapter(); 

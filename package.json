@@ -8,13 +8,13 @@
     ".": "./ports/server.js"
   },
   "scripts": {
-    "test": "node --test tests/**/*.test.js",
-    "start": "node ports/server.js"
+    "test": "node --test --experimental-test-coverage tests/**/*.test.js",
+    "test:watch": "node --test --watch tests/**/*.test.js",
+    "test:coverage": "node --test --experimental-test-coverage tests/**/*.test.js",
+    "start": "node ports/server.js",
+    "dev": "node --watch ports/server.js"
   },
   "engines": {
     "node": ">=18.0.0"
-  },
-  "dependencies": {
-    "dotenv": "^16.3.1"
   }
-} 
+}

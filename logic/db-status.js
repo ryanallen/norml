@@ -26,4 +26,19 @@ export async function checkDbStatus(dbAdapter) {
       await client.close();
     }
   }
-} 
+}
+
+export class DbStatusLogic {
+  validateStatus(status) {
+    if (!status || typeof status.connected !== 'boolean') {
+      throw new Error('Invalid status format');
+    }
+    return {
+      connected: status.connected,
+      lastError: status.lastError,
+      timestamp: status.timestamp || new Date()
+    };
+  }
+}
+
+export const dbStatusLogic = new DbStatusLogic(); 

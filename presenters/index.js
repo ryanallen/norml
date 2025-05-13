@@ -1,27 +1,84 @@
-// Index page presenter
-export function formatIndexPage(content) {
-  return `<!DOCTYPE html>
+import { Presenter } from '../ports/interfaces.js';
+
+export class IndexPresenter extends Presenter {
+  format(content) {
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${content.title}</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 2em auto; padding: 0 1em; }
+    .status { padding: 1em; border-radius: 4px; margin: 1em 0; }
+    .loading { background: #f5f5f5; }
+    .error { background: #fee; }
+    .success { background: #efe; }
+  </style>
 </head>
 <body>
   <h1>${content.title}</h1>
-  <p>Version: ${content.version}</p>
-  <button id="check">Check Status</button>
-  <pre id="result">Click button to check status</pre>
+  ${content.features.map(feature => `
+    <div class="feature">
+      <h2>${feature.name}</h2>
+      <div id="${feature.id}" class="status loading">
+        ${feature.states.checking.message}
+      </div>
+    </div>
+  `).join('')}
 
   <script>
-    document.getElementById('check').addEventListener('click', async () => {
-      const result = document.getElementById('result');
-      result.textContent = 'Checking...';
-      const response = await fetch('${content.features[0].endpoint}');
-      const data = await response.json();
-      result.textContent = JSON.stringify(data, null, 2);
+    async function checkStatus(feature) {
+      const element = document.getElementById(feature.id);
+      try {
+        const response = await fetch(feature.endpoint);
+        const data = await response.json();
+        element.textContent = JSON.stringify(data, null, 2);
+        element.className = 'status ' + (data.status === 'available' ? 'success' : 'error');
+      } catch (error) {
+        element.textContent = error.message;
+        element.className = 'status error';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      ${content.features.map(feature => `
+        checkStatus(${JSON.stringify(feature)});
+      `).join('')}
     });
   </script>
 </body>
 </html>`;
-} 
+  }
+
+  formatError(error) {
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Error</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 2em auto; padding: 0 1em; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <h1>Error</h1>
+  <p class="error">${error.message}</p>
+</body>
+</html>`;
+  }
+
+  present(res, content) {
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end(this.format(content));
+  }
+
+  presentError(res, error) {
+    res.writeHead(500, { 'Content-Type': 'text/html' });
+    res.end(this.formatError(error));
+  }
+}
+
+export const presenter = new IndexPresenter(); 

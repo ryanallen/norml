@@ -1,20 +1,34 @@
-// Database status response presenter
+import { Presenter } from '../ports/interfaces.js';
 
-// Format the response for the browser
-export function formatSuccessResponse(data) {
-  const response = {
-    status: data.available ? 'available' : 'unavailable',
-    time: data.checkedAt.toISOString()
-  };
-  
-  if (!data.available && data.error) {
-    response.error = data.error;
+export class DbStatusPresenter extends Presenter {
+  format(status) {
+    console.log('[DB Presenter] Formatting status:', status);
+    return {
+      status: status.connected ? 'available' : 'unavailable',
+      time: status.timestamp
+    };
   }
-  
-  return response;
+
+  formatError(error) {
+    console.log('[DB Presenter] Formatting error:', error);
+    return {
+      status: 'error',
+      message: error.message
+    };
+  }
+
+  present(res, status) {
+    console.log('[DB Presenter] Presenting status');
+    const code = status.connected ? 200 : 503;
+    res.writeHead(code, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(this.format(status)));
+  }
+
+  presentError(res, error) {
+    console.log('[DB Presenter] Presenting error');
+    res.writeHead(503, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(this.formatError(error)));
+  }
 }
 
-// Get the right HTTP status code
-export function getStatusCode(data) {
-  return data.available ? 200 : 503;
-} 
+export const presenter = new DbStatusPresenter(); 

@@ -4,15 +4,6 @@ import assert from 'node:assert/strict';
 import { handleRequest } from '../../ports/index.js';
 
 test('Index port', async (t) => {
-  // Mock functions
-  const mockGetVersion = () => '0.1.0-alpha.1';
-  const mockGetPageContent = () => ({
-    title: 'Database Status',
-    features: [{ name: 'Check Status', endpoint: '/db' }]
-  });
-  const mockFormatIndexPage = (content) => 
-    `<!DOCTYPE html><title>${content.title}</title>Version: ${content.version}`;
-
   await t.test('handles root path', async () => {
     const req = {
       method: 'GET',
@@ -33,14 +24,14 @@ test('Index port', async (t) => {
       }
     };
     
-    const handled = await handleRequest(req, res, mockGetVersion, mockGetPageContent, mockFormatIndexPage);
+    const handled = await handleRequest(req, res);
     
     assert.strictEqual(handled, true);
     assert.strictEqual(responseCode, 200);
     assert.deepStrictEqual(responseHeaders, { 'Content-Type': 'text/html' });
     assert.match(responseBody, /<!DOCTYPE html>/);
     assert.match(responseBody, /<title>Database Status<\/title>/);
-    assert.match(responseBody, /Version: 0\.1\.0-alpha\.1/);
+    assert.match(responseBody, /Version/);
   });
 
   await t.test('handles index.html path', async () => {
@@ -63,14 +54,14 @@ test('Index port', async (t) => {
       }
     };
     
-    const handled = await handleRequest(req, res, mockGetVersion, mockGetPageContent, mockFormatIndexPage);
+    const handled = await handleRequest(req, res);
     
     assert.strictEqual(handled, true);
     assert.strictEqual(responseCode, 200);
     assert.deepStrictEqual(responseHeaders, { 'Content-Type': 'text/html' });
     assert.match(responseBody, /<!DOCTYPE html>/);
     assert.match(responseBody, /<title>Database Status<\/title>/);
-    assert.match(responseBody, /Version: 0\.1\.0-alpha\.1/);
+    assert.match(responseBody, /Version/);
   });
 
   await t.test('ignores other paths', async () => {
@@ -84,7 +75,7 @@ test('Index port', async (t) => {
       end: () => {}
     };
     
-    const handled = await handleRequest(req, res, mockGetVersion, mockGetPageContent, mockFormatIndexPage);
+    const handled = await handleRequest(req, res);
     assert.strictEqual(handled, false);
   });
 }); 

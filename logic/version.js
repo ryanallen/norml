@@ -1,9 +1,20 @@
 // Version information logic
-import { getPackageVersion as defaultGetPackageVersion } from '../adapters/version.js';
+import { config } from '../adapters/config.js';
 
-export function getVersion(getPackageVersion = defaultGetPackageVersion) {
-  console.log('[Version Logic] Requesting version from adapter');
-  const version = getPackageVersion();
-  console.log('[Version Logic] Providing version:', version);
+export async function getVersion() {
+  return config.get('VERSION') || '0.1.0';
+}
+
+export function validateVersion(version) {
+  if (!version) throw new Error('Version is required');
   return version;
+}
+
+export async function getBuildInfo() {
+  return {
+    version: await getVersion(),
+    node: process.version,
+    timestamp: new Date().toISOString(),
+    environment: config.get('NODE_ENV') || 'development'
+  };
 } 

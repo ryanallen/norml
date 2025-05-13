@@ -3,17 +3,16 @@
 // But it doesn't make any decisions about what those responses should be
 
 import http from 'node:http';
-import { handleRequest as handleIndex } from './index.js';
-import { handleRequest as handleDbStatus } from './db-status.js';
-import { handleRequest as handleVersion } from './version.js';
+import router from './router.js';
+import { config } from '../adapters/config.js';
 
 // Log startup environment
 const env = {
-  NODE_ENV: process.env.NODE_ENV || 'development',
-  PORT: process.env.PORT || 3001,
-  CF_PAGES: process.env.CF_PAGES,
-  CF_PAGES_BRANCH: process.env.CF_PAGES_BRANCH,
-  CF_PAGES_URL: process.env.CF_PAGES_URL
+  NODE_ENV: config.get('NODE_ENV') || 'development',
+  PORT: config.get('PORT') || 3001,
+  CF_PAGES: config.get('CF_PAGES'),
+  CF_PAGES_BRANCH: config.get('CF_PAGES_BRANCH'),
+  CF_PAGES_URL: config.get('CF_PAGES_URL')
 };
 console.log('[Server Port] Starting in environment:', env);
 
@@ -21,26 +20,34 @@ console.log('[Server Port] Starting in environment:', env);
 const server = http.createServer(async (req, res) => {
   console.log('[Server Port] Request:', req.method, req.url);
   
-  // Try each endpoint handler in order
-  if (await handleIndex(req, res)) {
-    console.log('[Server Port] Handled by index');
-    return;
+  try {
+    // Use the router to handle the request
+    const handled = await router.route(req, res);
+    
+    if (!handled) {
+      // If no handler wants this request, send 404
+      console.log('[Server Port] No handler found - sending 404');
+      res.writeHead(404, { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      });
+      res.end(JSON.stringify({ 
+        error: 'Not Found',
+        message: `No handler found for ${req.method} ${req.url}`
+      }));
+    }
+  } catch (error) {
+    // Handle any errors that occur during request processing
+    console.error('[Server Port] Error handling request:', error);
+    res.writeHead(500, { 
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
+    res.end(JSON.stringify({ 
+      error: 'Internal Server Error',
+      message: error.message
+    }));
   }
-
-  if (await handleVersion(req, res)) {
-    console.log('[Server Port] Handled by version');
-    return;
-  }
-  
-  if (await handleDbStatus(req, res)) {
-    console.log('[Server Port] Handled by db-status');
-    return;
-  }
-
-  // If no handler wants this request, send 404
-  console.log('[Server Port] No handler found - sending 404');
-  res.writeHead(404, { 'Content-Type': 'text/plain' });
-  res.end('Not Found');
 });
 
 // Start listening for browser requests

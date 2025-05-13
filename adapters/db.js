@@ -1,38 +1,39 @@
-// Simple database connection adapter
-export class SimpleDbClient {
-  constructor(uri) {
-    if (!uri) {
-      throw new Error('DB_URI environment variable is required');
-    }
-    this.uri = uri;
+import { DatabasePort } from '../ports/interfaces.js';
+
+export class DatabaseAdapter extends DatabasePort {
+  constructor() {
+    super();
     this.isConnected = false;
+    this.lastError = null;
   }
 
   async connect() {
-    // Simulate connection delay
-    await new Promise(resolve => setTimeout(resolve, 100));
-    this.isConnected = true;
-    return this;
+    try {
+      // Simulate database connection
+      await new Promise(resolve => setTimeout(resolve, 500));
+      this.isConnected = true;
+      this.lastError = null;
+      return true;
+    } catch (error) {
+      this.isConnected = false;
+      this.lastError = error;
+      throw error;
+    }
   }
 
-  db() {
+  async checkStatus() {
     return {
-      command: async (cmd) => {
-        if (!this.isConnected) {
-          throw new Error('Not connected to database');
-        }
-        if (cmd.status === 1) {
-          return { ok: 1 };
-        }
-        throw new Error('Unknown command');
-      }
+      connected: this.isConnected,
+      lastError: this.lastError,
+      timestamp: new Date().toISOString()
     };
   }
 
-  async close() {
+  async disconnect() {
     this.isConnected = false;
+    this.lastError = null;
   }
 }
 
-// Connect to database and return the connection
-export default () => new SimpleDbClient(process.env.DB_URI).connect(); 
+// Export a singleton instance
+export const db = new DatabaseAdapter(); 

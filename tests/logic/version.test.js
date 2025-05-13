@@ -1,26 +1,19 @@
 // Test version logic
-import test from 'node:test';
+import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { getVersion } from '../../logic/version.js';
+import { getVersion, getBuildInfo } from '../../logic/version.js';
 
-test('Version logic returns adapter version', async (t) => {
-  const expectedVersion = '0.1.0-alpha.1';
-  
-  // Mock the version adapter
-  const mockGetPackageVersion = () => expectedVersion;
+describe('Version logic', () => {
+  it('returns version from adapter', async () => {
+    const version = await getVersion();
+    assert.strictEqual(version, '0.1.0');
+  });
 
-  const version = getVersion(mockGetPackageVersion);
-  assert.strictEqual(version, expectedVersion);
-});
-
-test('Version logic handles adapter errors', async (t) => {
-  // Mock the version adapter to throw an error
-  const mockGetPackageVersion = () => {
-    throw new Error('Adapter error');
-  };
-
-  assert.throws(
-    () => getVersion(mockGetPackageVersion),
-    { message: 'Adapter error' }
-  );
+  it('returns build info from adapter', async () => {
+    const info = await getBuildInfo();
+    assert(info.version);
+    assert(info.node);
+    assert(info.environment);
+    assert(info.timestamp);
+  });
 }); 

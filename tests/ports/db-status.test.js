@@ -1,28 +1,17 @@
 // Test database status endpoint
-import test from 'node:test';
+import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { handleRequest } from '../../ports/db-status.js';
+import { MockDatabaseAdapter } from '../mocks/db-adapter.js';
 
-test('Database status endpoint', async (t) => {
-  await t.test('returns JSON status response', async () => {
-    // Mock successful database check
-    const mockDbAdapter = async () => ({
-      db: () => ({
-        command: async () => ({})
-      }),
-      close: async () => {}
-    });
-
-    const req = {
-      method: 'GET',
-      url: '/db'
-    };
-
-    let responseCode;
-    let responseHeaders;
-    let responseBody;
-
-    const res = {
+describe('Database Status Port', () => {
+  let mockResponse;
+  
+  it('should handle successful database check', async () => {
+    const mockAdapter = new MockDatabaseAdapter({ shouldSucceed: true });
+    let responseCode, responseHeaders, responseBody;
+    
+    mockResponse = {
       writeHead: (code, headers) => {
         responseCode = code;
         responseHeaders = headers;
@@ -32,33 +21,34 @@ test('Database status endpoint', async (t) => {
       }
     };
 
-    const handled = await handleRequest(req, res, mockDbAdapter);
+    const req = {
+      method: 'GET',
+      url: '/db'
+    };
+
+    const handled = await handleRequest(req, mockResponse, mockAdapter);
 
     assert.strictEqual(handled, true);
+    assert.strictEqual(mockAdapter.connectCalled, true);
+    assert.strictEqual(mockAdapter.checkStatusCalled, true);
+    assert.strictEqual(mockAdapter.disconnectCalled, true);
     assert.strictEqual(responseCode, 200);
     assert.deepStrictEqual(responseHeaders, { 'Content-Type': 'application/json' });
-
-    const data = JSON.parse(responseBody);
-    assert.strictEqual(data.status, 'available');
-    assert.ok(data.time, 'Response should include time');
+    
+    const response = JSON.parse(responseBody);
+    assert.strictEqual(response.status, 'available');
+    assert.ok(response.time);
   });
 
-  await t.test('handles database errors', async () => {
-    // Mock failing database check
-    const mockDbAdapter = async () => {
-      throw new Error('Connection failed');
-    };
-
-    const req = {
-      method: 'GET',
-      url: '/db'
-    };
-
-    let responseCode;
-    let responseHeaders;
-    let responseBody;
-
-    const res = {
+  it('should handle database connection failure', async () => {
+    const mockAdapter = new MockDatabaseAdapter({ 
+      shouldSucceed: false,
+      error: new Error('Connection failed')
+    });
+    
+    let responseCode, responseHeaders, responseBody;
+    
+    mockResponse = {
       writeHead: (code, headers) => {
         responseCode = code;
         responseHeaders = headers;
@@ -68,69 +58,52 @@ test('Database status endpoint', async (t) => {
       }
     };
 
-    const handled = await handleRequest(req, res, mockDbAdapter);
-
-    assert.strictEqual(handled, true);
-    assert.strictEqual(responseCode, 503);
-    assert.deepStrictEqual(responseHeaders, { 'Content-Type': 'application/json' });
-
-    const data = JSON.parse(responseBody);
-    assert.strictEqual(data.status, 'unavailable');
-    assert.ok(data.error, 'Response should include error');
-    assert.ok(data.time, 'Response should include time');
-  });
-
-  await t.test('ignores non-GET requests', async () => {
-    let called = false;
-    const mockDbAdapter = async () => {
-      called = true;
-      return {
-        db: () => ({
-          command: async () => ({})
-        }),
-        close: async () => {}
-      };
+    const req = {
+      method: 'GET',
+      url: '/db'
     };
 
+    const handled = await handleRequest(req, mockResponse, mockAdapter);
+
+    assert.strictEqual(handled, true);
+    assert.strictEqual(mockAdapter.connectCalled, true);
+    assert.strictEqual(responseCode, 503);
+    assert.deepStrictEqual(responseHeaders, { 'Content-Type': 'application/json' });
+    
+    const response = JSON.parse(responseBody);
+    assert.strictEqual(response.status, 'error');
+    assert.strictEqual(response.message, 'Connection failed');
+  });
+
+  it('should ignore non-GET requests', async () => {
+    const mockAdapter = new MockDatabaseAdapter();
+    
     const req = {
       method: 'POST',
       url: '/db'
     };
 
-    const res = {
-      writeHead: () => {},
-      end: () => {}
-    };
+    const handled = await handleRequest(req, mockResponse, mockAdapter);
 
-    const handled = await handleRequest(req, res, mockDbAdapter);
     assert.strictEqual(handled, false);
-    assert.strictEqual(called, false);
+    assert.strictEqual(mockAdapter.connectCalled, false);
+    assert.strictEqual(mockAdapter.checkStatusCalled, false);
+    assert.strictEqual(mockAdapter.disconnectCalled, false);
   });
 
-  await t.test('ignores other paths', async () => {
-    let called = false;
-    const mockDbAdapter = async () => {
-      called = true;
-      return {
-        db: () => ({
-          command: async () => ({})
-        }),
-        close: async () => {}
-      };
-    };
-
+  it('should ignore other paths', async () => {
+    const mockAdapter = new MockDatabaseAdapter();
+    
     const req = {
       method: 'GET',
       url: '/other'
     };
 
-    const res = {
-      writeHead: () => {},
-      end: () => {}
-    };
+    const handled = await handleRequest(req, mockResponse, mockAdapter);
 
-    const handled = await handleRequest(req, res, mockDbAdapter);
     assert.strictEqual(handled, false);
-    assert.strictEqual(called, false);
+    assert.strictEqual(mockAdapter.connectCalled, false);
+    assert.strictEqual(mockAdapter.checkStatusCalled, false);
+    assert.strictEqual(mockAdapter.disconnectCalled, false);
   });
 }); 
