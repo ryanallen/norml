@@ -1,22 +1,22 @@
 // Test database status check logic
-import test from 'node:test';
-import assert from 'node:assert';
-import { checkDbStatus } from '../../logic/db-status.js';
+import { strict as assert } from 'assert';
+import { test } from 'node:test';
+import { checkDbStatus, dbStatusLogic } from '../../logic/db-status.js';
 
 test('Database status logic', async (t) => {
   await t.test('returns available when database responds', async () => {
     // Mock adapter that simulates successful database
     const mockAdapter = async () => ({
       db: () => ({
-        command: () => Promise.resolve({ ok: 1 })
+        command: async () => ({ ok: 1 })
       }),
-      close: () => Promise.resolve()
+      close: async () => {}
     });
 
     const result = await checkDbStatus(mockAdapter);
     
-    assert.strictEqual(result.available, true);
-    assert.ok(result.checkedAt instanceof Date);
+    assert.equal(result.available, true);
+    assert(result.checkedAt instanceof Date);
   });
 
   await t.test('returns unavailable when database fails', async () => {
@@ -27,41 +27,69 @@ test('Database status logic', async (t) => {
 
     const result = await checkDbStatus(mockAdapter);
     
-    assert.strictEqual(result.available, false);
-    assert.strictEqual(result.error, 'Connection failed');
-    assert.ok(result.checkedAt instanceof Date);
+    assert.equal(result.available, false);
+    assert.equal(result.error, 'Connection failed');
+    assert(result.checkedAt instanceof Date);
   });
 
   await t.test('returns unavailable when database command fails', async () => {
     // Mock adapter that connects but fails on command
     const mockAdapter = async () => ({
       db: () => ({
-        command: () => Promise.reject(new Error('Command failed'))
+        command: async () => {
+          throw new Error('Command failed');
+        }
       }),
-      close: () => Promise.resolve()
+      close: async () => {}
     });
 
     const result = await checkDbStatus(mockAdapter);
     
-    assert.strictEqual(result.available, false);
-    assert.strictEqual(result.error, 'Command failed');
-    assert.ok(result.checkedAt instanceof Date);
+    assert.equal(result.available, false);
+    assert.equal(result.error, 'Command failed');
+    assert(result.checkedAt instanceof Date);
   });
 
   await t.test('closes connection even after error', async () => {
     let closed = false;
     const mockAdapter = async () => ({
       db: () => ({
-        command: () => Promise.reject(new Error('Command failed'))
+        command: async () => {
+          throw new Error('Command failed');
+        }
       }),
-      close: () => {
-        closed = true;
-        return Promise.resolve();
-      }
+      close: async () => { closed = true; }
     });
 
     await checkDbStatus(mockAdapter);
     
-    assert.strictEqual(closed, true);
+    assert.equal(closed, true);
+  });
+
+  await t.test('validates status format correctly', () => {
+    const validStatus = {
+      connected: true,
+      lastError: null,
+      timestamp: new Date()
+    };
+    const result = dbStatusLogic.validateStatus(validStatus);
+    assert.equal(result.connected, true);
+    assert.equal(result.lastError, null);
+    assert(result.timestamp instanceof Date);
+  });
+
+  await t.test('adds timestamp if missing', () => {
+    const status = {
+      connected: true,
+      lastError: null
+    };
+    const result = dbStatusLogic.validateStatus(status);
+    assert(result.timestamp instanceof Date);
+  });
+
+  await t.test('throws error for invalid status', () => {
+    assert.throws(() => {
+      dbStatusLogic.validateStatus({});
+    }, /Invalid status format/);
   });
 }); 

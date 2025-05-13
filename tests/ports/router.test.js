@@ -1,9 +1,9 @@
-import { describe, it } from 'node:test';
-import assert from 'node:assert';
+import { strict as assert } from 'assert';
+import { test } from 'node:test';
 import { Router } from '../../ports/router.js';
 
-describe('Router', () => {
-  it('should add and match routes', async () => {
+test('Router', async (t) => {
+  await t.test('should add and match routes', async () => {
     const router = new Router();
     let handlerCalled = false;
 
@@ -21,11 +21,11 @@ describe('Router', () => {
     const res = {};
 
     const handled = await router.route(req, res);
-    assert.strictEqual(handled, true);
-    assert.strictEqual(handlerCalled, true);
+    assert.equal(handled, true);
+    assert.equal(handlerCalled, true);
   });
 
-  it('should handle unknown routes', async () => {
+  await t.test('should handle unknown routes', async () => {
     const router = new Router();
     const req = {
       method: 'GET',
@@ -36,10 +36,10 @@ describe('Router', () => {
     const res = {};
 
     const handled = await router.route(req, res);
-    assert.strictEqual(handled, false);
+    assert.equal(handled, false);
   });
 
-  it('should handle different HTTP methods', async () => {
+  await t.test('should handle different HTTP methods', async () => {
     const router = new Router();
     let getHandlerCalled = false;
     let postHandlerCalled = false;
@@ -68,7 +68,7 @@ describe('Router', () => {
       headers: { host: 'localhost' }
     }, {});
 
-    assert.strictEqual(getHandlerCalled, true);
-    assert.strictEqual(postHandlerCalled, true);
+    assert.equal(getHandlerCalled, true);
+    assert.equal(postHandlerCalled, true);
   });
 }); 
