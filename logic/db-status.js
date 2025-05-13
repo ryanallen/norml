@@ -1,4 +1,4 @@
-// This file checks if our database is working
+// Database status check logic
 
 // Try to connect to the database and tell us if it worked
 export async function checkDbStatus(dbAdapter) {

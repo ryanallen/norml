@@ -4,20 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NORML - MongoDB Status</title>
-  <style>
-    body { font-family: system-ui, sans-serif; max-width: 800px; margin: 0 auto; padding: 2rem; }
-    h1 { border-bottom: 1px solid #ddd; padding-bottom: 0.5rem; }
-    .status { padding: 1rem; margin: 1rem 0; border-radius: 4px; }
-    .rhombus { margin: 2rem 0; }
-    .rhombus li { margin-bottom: 0.5rem; }
-  </style>
 </head>
 <body>
   <h1>NORML</h1>
   <div class="status">
     <h2>MongoDB Connection Status</h2>
-    <p>Our test suite automatically verifies MongoDB connectivity.</p>
-    <p>Last test run: See GitHub Actions</p>
+    <button id="runDbCheck">Check Database Status</button>
+    <div id="results">
+      <p>Click button to check MongoDB connection status</p>
+    </div>
   </div>
 
   <div class="rhombus">
@@ -34,5 +29,35 @@
   </div>
 
   <p><a href="https://github.com/ryanallen/norml">View on GitHub</a></p>
+
+  <script>
+    document.getElementById('runDbCheck').addEventListener('click', async () => {
+      const button = document.getElementById('runDbCheck');
+      const results = document.getElementById('results');
+      
+      // Disable button while checking
+      button.disabled = true;
+      results.innerHTML = '<p>Checking connection...</p>';
+      
+      try {
+        const response = await fetch('/db-status/db');
+        const data = await response.json();
+        results.innerHTML = `
+          <p>Status: ${data.status}</p>
+          <p>Message: ${data.message}</p>
+          <p>Last checked: ${data.time}</p>
+          ${data.error ? `<p>Error: ${data.error}</p>` : ''}
+        `;
+      } catch (error) {
+        results.innerHTML = `
+          <p>Status: error</p>
+          <p>Message: Could not connect to database status endpoint</p>
+        `;
+      }
+      
+      // Re-enable button
+      button.disabled = false;
+    });
+  </script>
 </body>
 </html> 

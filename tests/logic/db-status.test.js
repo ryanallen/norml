@@ -1,7 +1,7 @@
 // Test if our database checker works right
 import test from 'node:test';
 import assert from 'node:assert';
-import { checkDbStatus } from '../../logic/health.js';
+import { checkDbStatus } from '../../logic/db-status.js';
 
 test('Database checker works', async () => {
   // Pretend to be MongoDB (fake it for testing)

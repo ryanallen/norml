@@ -1,4 +1,4 @@
-// Presenter module - Formats data for API responses
+// Database status response presenter
 
 // Format database status for HTTP response
 export function formatSuccessResponse(data) {
