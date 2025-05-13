@@ -3,13 +3,17 @@
 // But it doesn't make any decisions about what those responses should be
 
 import http from 'node:http';
+import { handleRequest as handleIndex } from './index.js';
 import { handleRequest as handleDbStatus } from './db-status.js';
 import { handleRequest as handleVersion } from './version.js';
-import { handleRequest as handleServerLogic } from '../logic/server.js';
 
 // Create an HTTP server that can accept requests from browsers
 const server = http.createServer(async (req, res) => {
   // Try each endpoint handler in order
+  if (await handleIndex(req, res)) {
+    return;
+  }
+
   if (await handleVersion(req, res)) {
     return;
   }
@@ -18,12 +22,9 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // For all other URLs, ask the server logic what to do
-  const response = await handleServerLogic(req);
-  
-  // Write the response back to the browser
-  res.writeHead(response.status, response.headers);
-  res.end(response.body);
+  // If no handler wants this request, send 404
+  res.writeHead(404, { 'Content-Type': 'text/plain' });
+  res.end('Not Found');
 });
 
 // Start listening for browser requests on port 3001 (or whatever PORT env var says)
