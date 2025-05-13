@@ -1,5 +1,5 @@
 // Test index page port
-import test from 'node:test';
+import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { handleRequest } from '../../ports/index.js';
 

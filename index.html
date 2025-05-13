@@ -69,7 +69,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       
-        checkStatus({"id":"db-status","name":"Database Status","endpoint":"/db","states":{"checking":{"type":"loading","message":"Checking..."},"success":{"type":"success"},"error":{"type":"error","message":"Error checking status: {error}"}}});
+        checkStatus({"id":"db-status","name":"Database Status","endpoint":"https://norml-459701.uc.r.appspot.com/api/status","states":{"checking":{"type":"loading","message":"Checking..."},"success":{"type":"success"},"error":{"type":"error","message":"Error checking status: {error}"}}});
       
         checkStatus({"id":"version-info","name":"Version","endpoint":"https://norml-459701.uc.r.appspot.com/api/version","states":{"checking":{"type":"loading","message":"Loading..."},"success":{"type":"success"},"error":{"type":"error","message":"Error loading version"}}});
       

@@ -4,7 +4,7 @@ import { StaticGeneratorAdapter } from '../adapters/static-generator.js';
 import { IndexPresenter } from '../presenters/index.js';
 
 const config = {
-  apiBase: process.env.API_BASE || 'https://your-cloud-run-url.run.app'
+  apiBase: process.env.API_BASE || 'https://norml-459701.uc.r.appspot.com'
 };
 
 async function build() {

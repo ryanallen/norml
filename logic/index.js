@@ -6,7 +6,7 @@ export function getPageContent() {
       {
         id: 'db-status',
         name: 'Database Status',
-        endpoint: '/db',
+        endpoint: '/api/status',
         states: {
           checking: { type: 'loading', message: 'Checking...' },
           success: { type: 'success' },

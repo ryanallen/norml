@@ -6,7 +6,7 @@ import { presenter } from '../presenters/db-status.js';
 
 // Handle a request to check database status
 export async function handleRequest(req, res, testAdapter) {
-  if (req.method === 'GET' && req.url === '/db') {
+  if (req.method === 'GET' && req.url === '/api/status') {
     try {
       console.log('[DB Port] Using adapter:', testAdapter ? 'test' : 'real');
       const adapter = testAdapter || db;

@@ -1,5 +1,5 @@
 // Test version endpoint
-import { strict as assert } from 'assert';
+import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
 import { handleVersionRequest } from '../../ports/version.js';
 

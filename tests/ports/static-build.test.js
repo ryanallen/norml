@@ -7,7 +7,7 @@ test('Static Build', async (t) => {
     const mockContent = {
       features: [
         { endpoint: '/api/version', name: 'Version' },
-        { endpoint: '/db', name: 'Database' }
+        { endpoint: '/api/status', name: 'Database' }
       ]
     };
 
@@ -23,7 +23,7 @@ test('Static Build', async (t) => {
       writeFile: async (filename, content) => {
         assert.equal(filename, 'index.html');
         assert.match(content, /test-api\.example\.com\/api\/version/);
-        assert.match(content, /\/db/); // Non-API endpoint should remain unchanged
+        assert.match(content, /test-api\.example\.com\/api\/status/);
         return true;
       }
     };

@@ -1,4 +1,4 @@
-import { strict as assert } from 'assert';
+import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
 import { IndexPresenter } from '../../presenters/index.js';
 
@@ -51,7 +51,7 @@ test('IndexPresenter', async (t) => {
       features: [{
         id: 'db',
         name: 'Database',
-        endpoint: '/db',
+        endpoint: '/api/status',
         states: {
           checking: { message: 'Checking...' }
         }

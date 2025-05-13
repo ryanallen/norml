@@ -19,7 +19,7 @@ test('Page Content Generator', async (t) => {
     const dbFeature = content.features[0];
     assert.equal(dbFeature.id, 'db-status');
     assert.equal(dbFeature.name, 'Database Status');
-    assert.equal(dbFeature.endpoint, '/db');
+    assert.equal(dbFeature.endpoint, '/api/status');
     assert.deepEqual(dbFeature.states.checking, { type: 'loading', message: 'Checking...' });
     assert.deepEqual(dbFeature.states.success, { type: 'success' });
     assert.deepEqual(dbFeature.states.error, { type: 'error', message: 'Error checking status: {error}' });

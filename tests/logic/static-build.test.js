@@ -6,7 +6,7 @@ test('Static build logic', async (t) => {
   await t.test('prepares content with API base', () => {
     const content = {
       features: [
-        { endpoint: '/db' },
+        { endpoint: '/api/status' },
         { endpoint: '/api/version' }
       ]
     };
@@ -14,7 +14,7 @@ test('Static build logic', async (t) => {
     
     const result = prepareStaticContent(content, config);
     
-    assert.equal(result.features[0].endpoint, 'https://api.example.com/db');
+    assert.equal(result.features[0].endpoint, 'https://api.example.com/api/status');
     assert.equal(result.features[1].endpoint, 'https://api.example.com/api/version');
   });
 }); 

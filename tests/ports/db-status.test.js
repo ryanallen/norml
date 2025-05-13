@@ -23,7 +23,7 @@ describe('Database Status Port', () => {
 
     const req = {
       method: 'GET',
-      url: '/db'
+      url: '/api/status'
     };
 
     const handled = await handleRequest(req, mockResponse, mockAdapter);
@@ -60,7 +60,7 @@ describe('Database Status Port', () => {
 
     const req = {
       method: 'GET',
-      url: '/db'
+      url: '/api/status'
     };
 
     const handled = await handleRequest(req, mockResponse, mockAdapter);
@@ -80,7 +80,7 @@ describe('Database Status Port', () => {
     
     const req = {
       method: 'POST',
-      url: '/db'
+      url: '/api/status'
     };
 
     const handled = await handleRequest(req, mockResponse, mockAdapter);
