@@ -20,11 +20,11 @@ export function determineCachePolicy(mimeType) {
     // Cache images for a day with revalidation
     return 'public, max-age=86400, must-revalidate';
   } else if (mimeType === 'text/html') {
-    // Don't cache HTML
-    return 'no-store';
+    // Don't cache HTML but ensure must-revalidate is included
+    return 'no-store, must-revalidate';
   } else if (mimeType === 'application/json') {
-    // Don't cache API responses
-    return 'no-store';
+    // Don't cache API responses but ensure must-revalidate is included
+    return 'no-store, must-revalidate';
   } else if (mimeType === 'text/plain') {
     // Cache text files but revalidate
     return 'public, max-age=14400, must-revalidate';
@@ -97,7 +97,7 @@ export function processStaticFileRequest(fileInfo) {
   
   // Add Content-Type with or without charset
   if (shouldIncludeCharset(mimeType)) {
-    headers['Content-Type'] = `${mimeType}; charset=UTF-8`;
+    headers['Content-Type'] = `${mimeType}; charset=utf-8`;
   } else {
     headers['Content-Type'] = mimeType;
   }

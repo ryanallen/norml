@@ -23,7 +23,12 @@ const server = http.createServer(async (req, res) => {
   
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    res.writeHead(204, ResponseHeaders.getHeadersFor('text/plain'));
+    const headers = ResponseHeaders.getHeadersFor('text/plain');
+    // Ensure X-Content-Type-Options is set
+    if (!headers['X-Content-Type-Options']) {
+      headers['X-Content-Type-Options'] = 'nosniff';
+    }
+    res.writeHead(204, headers);
     res.end();
     return;
   }
@@ -35,7 +40,12 @@ const server = http.createServer(async (req, res) => {
     if (!handled) {
       // If no handler wants this request, send 404
       console.log('[Server Port] No handler found - sending 404');
-      res.writeHead(404, ResponseHeaders.getHeadersFor('application/json'));
+      const headers = ResponseHeaders.getHeadersFor('application/json');
+      // Ensure X-Content-Type-Options is set
+      if (!headers['X-Content-Type-Options']) {
+        headers['X-Content-Type-Options'] = 'nosniff';
+      }
+      res.writeHead(404, headers);
       res.end(JSON.stringify({ 
         error: 'Not Found',
         message: `No handler found for ${req.method} ${req.url}`
@@ -45,7 +55,12 @@ const server = http.createServer(async (req, res) => {
     // Handle any errors that occur during request processing
     console.error('[Server Port] Error handling request:', error);
     console.error('[Server Port] Error stack:', error.stack);
-    res.writeHead(500, ResponseHeaders.getHeadersFor('application/json'));
+    const headers = ResponseHeaders.getHeadersFor('application/json');
+    // Ensure X-Content-Type-Options is set
+    if (!headers['X-Content-Type-Options']) {
+      headers['X-Content-Type-Options'] = 'nosniff';
+    }
+    res.writeHead(500, headers);
     res.end(JSON.stringify({ 
       error: 'Internal Server Error',
       message: error.message

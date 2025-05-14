@@ -19,12 +19,26 @@ export class VersionPresenter extends Presenter {
   }
 
   present(response, version) {
-    response.writeHead(200, ResponseHeaders.getHeadersFor('application/json'));
+    const headers = ResponseHeaders.getHeadersFor('application/json');
+    
+    // Ensure X-Content-Type-Options is set
+    if (!headers['X-Content-Type-Options']) {
+      headers['X-Content-Type-Options'] = 'nosniff';
+    }
+    
+    response.writeHead(200, headers);
     response.end(JSON.stringify(this.format(version)));
   }
 
   presentError(response, error) {
-    response.writeHead(500, ResponseHeaders.getHeadersFor('application/json'));
+    const headers = ResponseHeaders.getHeadersFor('application/json');
+    
+    // Ensure X-Content-Type-Options is set
+    if (!headers['X-Content-Type-Options']) {
+      headers['X-Content-Type-Options'] = 'nosniff';
+    }
+    
+    response.writeHead(500, headers);
     response.end(JSON.stringify(this.formatError(error)));
   }
 }

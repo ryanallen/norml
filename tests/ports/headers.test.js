@@ -6,7 +6,7 @@ describe('Response Headers', () => {
   describe('getDefaultHeaders', () => {
     it('should include Content-Type header', () => {
       const headers = ResponseHeaders.getDefaultHeaders();
-      assert.strictEqual(headers['Content-Type'], 'application/json; charset=UTF-8');
+      assert.strictEqual(headers['Content-Type'], 'application/json; charset=utf-8');
     });
     
     it('should include security headers', () => {
@@ -22,22 +22,21 @@ describe('Response Headers', () => {
       assert.ok(headers['Access-Control-Allow-Headers']);
     });
     
-    it('should include Cache-Control header without must-revalidate', () => {
+    it('should include Cache-Control header', () => {
       const headers = ResponseHeaders.getDefaultHeaders();
       assert.strictEqual(headers['Cache-Control'], 'no-store');
-      assert.ok(!headers['Cache-Control'].includes('must-revalidate'));
     });
   });
   
   describe('getHeadersFor', () => {
     it('should set correct Content-Type for JSON', () => {
       const headers = ResponseHeaders.getHeadersFor('application/json');
-      assert.strictEqual(headers['Content-Type'], 'application/json; charset=UTF-8');
+      assert.strictEqual(headers['Content-Type'], 'application/json; charset=utf-8');
     });
     
     it('should set correct Content-Type for HTML', () => {
       const headers = ResponseHeaders.getHeadersFor('text/html');
-      assert.strictEqual(headers['Content-Type'], 'text/html; charset=UTF-8');
+      assert.strictEqual(headers['Content-Type'], 'text/html; charset=utf-8');
     });
     
     it('should not include charset for binary files', () => {
@@ -52,12 +51,22 @@ describe('Response Headers', () => {
     
     it('should set appropriate Cache-Control for HTML', () => {
       const headers = ResponseHeaders.getHeadersFor('text/html');
-      assert.strictEqual(headers['Cache-Control'], 'no-store');
+      assert.strictEqual(headers['Cache-Control'], 'no-store, must-revalidate');
+    });
+    
+    it('should set appropriate Cache-Control for JSON', () => {
+      const headers = ResponseHeaders.getHeadersFor('application/json');
+      assert.strictEqual(headers['Cache-Control'], 'no-store, must-revalidate');
     });
     
     it('should use provided Cache-Control when specified', () => {
       const headers = ResponseHeaders.getHeadersFor('text/html', 'custom-value');
       assert.strictEqual(headers['Cache-Control'], 'custom-value');
+    });
+    
+    it('should include X-Content-Type-Options header', () => {
+      const headers = ResponseHeaders.getHeadersFor('application/json');
+      assert.strictEqual(headers['X-Content-Type-Options'], 'nosniff');
     });
   });
 }); 

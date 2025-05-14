@@ -8,11 +8,10 @@ import {
 export class ResponseHeaders {
   static getDefaultHeaders() {
     return {
-      'Content-Type': 'application/json; charset=UTF-8',
+      'Content-Type': 'application/json; charset=utf-8',
       'Access-Control-Allow-Origin': '*', // Allow cross-origin requests
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', // Supported methods
       'Access-Control-Allow-Headers': 'Content-Type', // Allowed headers
-      'X-Content-Type-Options': 'nosniff',
       ...getSecurityHeaders(),
       'Cache-Control': 'no-store', // Prevent caching without must-revalidate
       'Access-Control-Expose-Headers': 'Content-Length, Content-Type' // Expose these headers to the browser
@@ -24,7 +23,7 @@ export class ResponseHeaders {
     
     // Use logic layer to determine if charset should be included
     if (shouldIncludeCharset(contentType)) {
-      headers['Content-Type'] = `${contentType}; charset=UTF-8`;
+      headers['Content-Type'] = `${contentType}; charset=utf-8`;
     } else {
       headers['Content-Type'] = contentType;
     }
@@ -37,7 +36,6 @@ export class ResponseHeaders {
     headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS';
     headers['Access-Control-Allow-Headers'] = 'Content-Type';
     headers['Access-Control-Expose-Headers'] = 'Content-Length, Content-Type';
-    headers['X-Content-Type-Options'] = 'nosniff';
     
     return headers;
   }

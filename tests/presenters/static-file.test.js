@@ -95,7 +95,15 @@ describe('Static File Presenter', () => {
       presenter.presentError(mockResponse, error);
       
       assert.ok(mockResponse.headers['Content-Type'].startsWith('application/json'));
-      assert.ok(mockResponse.headers['Content-Type'].includes('charset=UTF-8'));
+      assert.ok(mockResponse.headers['Content-Type'].includes('charset=utf-8'));
+    });
+    
+    it('should include X-Content-Type-Options header', () => {
+      const error = new Error('Test error');
+      
+      presenter.presentError(mockResponse, error);
+      
+      assert.strictEqual(mockResponse.headers['X-Content-Type-Options'], 'nosniff');
     });
     
     it('should set body to JSON string of formatted error', () => {

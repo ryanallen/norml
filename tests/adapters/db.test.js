@@ -35,24 +35,41 @@ test('DbAdapter with real MongoDB', async (t) => {
       assert.equal(status.connected, true);
       assert.equal(status.lastError, null);
       assert(status.timestamp);
+      assert(status.connectionDetails, 'Should include connection details');
+      assert(status.connectionDetails.host, 'Should include host in connection details');
+      assert(status.connectionDetails.port, 'Should include port in connection details');
       await adapter.disconnect();
     });
   } else {
     console.log('MONGODB_URI not found in .env.yaml. Tests will be limited.');
   }
   
-  // Test connection failures (always works)
+  // Test connection failures
   await t.test('handles connection failures', async () => {
-    try {
-      await adapter.connect({
-        uri: "mongodb://wrong-host:27017"
-      });
-      assert.fail('Should throw on wrong host');
-    } catch (error) {
-      assert(error instanceof Error);
-      const status = await adapter.getStatus();
-      assert.equal(status.connected, false);
-      assert(status.lastError);
-    }
+    const result = await adapter.connect({
+      uri: "mongodb://wrong-host:27017"
+    });
+    
+    // Should return false instead of throwing
+    assert.equal(result, false);
+    assert.equal(adapter.isConnected, false);
+    assert(adapter.lastError, 'Should have lastError set');
+    
+    const status = await adapter.getStatus();
+    assert.equal(status.connected, false);
+    assert(status.lastError, 'Status should include error message');
+    assert(status.connectionDetails, 'Should include connection details even on failure');
+  });
+  
+  // Test missing URI
+  await t.test('handles missing URI', async () => {
+    const result = await adapter.connect({
+      uri: null
+    });
+    
+    assert.equal(result, false);
+    assert.equal(adapter.isConnected, false);
+    assert(adapter.lastError, 'Should have lastError set');
+    assert.equal(adapter.lastError.message, 'MongoDB URI is required');
   });
 }); 

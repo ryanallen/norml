@@ -19,12 +19,26 @@ export class DbPresenter extends Presenter {
   }
 
   present(res, data) {
-    res.writeHead(200, ResponseHeaders.getHeadersFor('application/json'));
+    const headers = ResponseHeaders.getHeadersFor('application/json');
+    
+    // Ensure X-Content-Type-Options is set
+    if (!headers['X-Content-Type-Options']) {
+      headers['X-Content-Type-Options'] = 'nosniff';
+    }
+    
+    res.writeHead(200, headers);
     res.end(JSON.stringify(this.format(data)));
   }
 
   presentError(res, error) {
-    res.writeHead(500, ResponseHeaders.getHeadersFor('application/json'));
+    const headers = ResponseHeaders.getHeadersFor('application/json');
+    
+    // Ensure X-Content-Type-Options is set
+    if (!headers['X-Content-Type-Options']) {
+      headers['X-Content-Type-Options'] = 'nosniff';
+    }
+    
+    res.writeHead(500, headers);
     res.end(JSON.stringify(this.formatError(error)));
   }
 }

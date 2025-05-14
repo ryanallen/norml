@@ -30,12 +30,12 @@ describe('Static File Logic', () => {
       assert.strictEqual(determineCachePolicy('image/svg+xml'), 'public, max-age=86400, must-revalidate');
     });
 
-    it('should return no-store for HTML', () => {
-      assert.strictEqual(determineCachePolicy('text/html'), 'no-store');
+    it('should return no-store with must-revalidate for HTML', () => {
+      assert.strictEqual(determineCachePolicy('text/html'), 'no-store, must-revalidate');
     });
 
-    it('should return no-store for JSON', () => {
-      assert.strictEqual(determineCachePolicy('application/json'), 'no-store');
+    it('should return no-store with must-revalidate for JSON', () => {
+      assert.strictEqual(determineCachePolicy('application/json'), 'no-store, must-revalidate');
     });
 
     it('should return default cache policy for other types', () => {
@@ -114,14 +114,34 @@ describe('Static File Logic', () => {
       assert.strictEqual(result.headers['X-Content-Type-Options'], 'nosniff');
     });
 
-    it('should include charset for text files', () => {
+    it('should include lowercase charset for text files', () => {
       const result = processStaticFileRequest({
         path: '/index.html',
         exists: true,
         mimeType: 'text/html'
       });
       
-      assert.strictEqual(result.headers['Content-Type'], 'text/html; charset=UTF-8');
+      assert.strictEqual(result.headers['Content-Type'], 'text/html; charset=utf-8');
+    });
+    
+    it('should include must-revalidate for Cache-Control on HTML', () => {
+      const result = processStaticFileRequest({
+        path: '/index.html',
+        exists: true,
+        mimeType: 'text/html'
+      });
+      
+      assert.strictEqual(result.headers['Cache-Control'], 'no-store, must-revalidate');
+    });
+    
+    it('should include must-revalidate for Cache-Control on JSON', () => {
+      const result = processStaticFileRequest({
+        path: '/data.json',
+        exists: true,
+        mimeType: 'application/json'
+      });
+      
+      assert.strictEqual(result.headers['Cache-Control'], 'no-store, must-revalidate');
     });
   });
 }); 
