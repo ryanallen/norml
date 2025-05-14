@@ -13,7 +13,8 @@
 .git
 .gitignore
 .env
-.env.yaml
+# We're setting env variables directly in app.yaml now
+# .env.yaml
 
 # Node.js dependencies:
 node_modules/
