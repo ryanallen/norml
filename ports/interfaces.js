@@ -122,6 +122,20 @@ export class StaticGeneratorPort {
   }
 }
 
+export class StaticFilePort {
+  async readFile(filePath) {
+    throw new Error('StaticFilePort.readFile() must be implemented');
+  }
+  
+  async fileExists(filePath) {
+    throw new Error('StaticFilePort.fileExists() must be implemented');
+  }
+  
+  getMimeType(filePath) {
+    throw new Error('StaticFilePort.getMimeType() must be implemented');
+  }
+}
+
 export class CloudPort {
   async initialize(config) {
     throw new Error('Method not implemented');
