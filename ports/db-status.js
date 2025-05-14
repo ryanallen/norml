@@ -3,7 +3,6 @@
 
 import { db } from '../adapters/db.js';
 import { presenter } from '../presenters/db.js';
-import { ResponseHeaders } from './headers.js';
 
 // Handle a request to check database status
 export async function handleRequest(req, res, testAdapter) {
@@ -33,10 +32,8 @@ export async function handleRequest(req, res, testAdapter) {
 
       console.log('[DB Port] Got comprehensive status:', status);
       
-      // Use ResponseHeaders directly instead of relying on presenter
-      const headers = ResponseHeaders.getHeadersFor('application/json');
-      res.writeHead(200, headers);
-      res.end(JSON.stringify(presenter.format(status)));
+      // Use the presenter to format and deliver the response
+      presenter.present(res, status);
       
       return true;
     } catch (error) {

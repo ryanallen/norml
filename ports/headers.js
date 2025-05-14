@@ -8,7 +8,7 @@ import {
 export class ResponseHeaders {
   static getDefaultHeaders() {
     return {
-      'Content-Type': 'application/json; charset=utf-8',
+      'Content-Type': 'application/json; charset=UTF-8',
       'Access-Control-Allow-Origin': '*', // Allow cross-origin requests
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', // Supported methods
       'Access-Control-Allow-Headers': 'Content-Type', // Allowed headers
@@ -24,7 +24,7 @@ export class ResponseHeaders {
     
     // Use logic layer to determine if charset should be included
     if (shouldIncludeCharset(contentType)) {
-      headers['Content-Type'] = `${contentType}; charset=utf-8`;
+      headers['Content-Type'] = `${contentType}; charset=UTF-8`;
     } else {
       headers['Content-Type'] = contentType;
     }

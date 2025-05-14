@@ -97,7 +97,7 @@ export function processStaticFileRequest(fileInfo) {
   
   // Add Content-Type with or without charset
   if (shouldIncludeCharset(mimeType)) {
-    headers['Content-Type'] = `${mimeType}; charset=utf-8`;
+    headers['Content-Type'] = `${mimeType}; charset=UTF-8`;
   } else {
     headers['Content-Type'] = mimeType;
   }

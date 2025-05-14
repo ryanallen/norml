@@ -61,7 +61,11 @@ export async function handleRequest(req, res) {
       return true;
     } catch (error) {
       console.error(`[Static File] Error serving favicon.ico:`, error);
-      return false;
+      // Create a specific error with proper type but maintain correct Content-Type
+      const faviconError = new Error(`Failed to read favicon: ${error.message}`);
+      // Pass the favicon headers to ensure correct Content-Type is maintained
+      presenter.presentError(res, faviconError, faviconHeaders);
+      return true; // Return true to indicate we handled the request
     }
   }
   

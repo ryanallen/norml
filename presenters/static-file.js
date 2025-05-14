@@ -1,6 +1,7 @@
 // Static file presenter
 // Formats static file responses for the client
 import { Presenter } from '../ports/interfaces.js';
+import { ResponseHeaders } from '../ports/headers.js';
 
 export class StaticFilePresenter extends Presenter {
   /**
@@ -44,15 +45,19 @@ export class StaticFilePresenter extends Presenter {
    * Present an error to the client
    * @param {Object} res - HTTP response object
    * @param {Error} error - The error that occurred
+   * @param {Object} customHeaders - Optional custom headers to include
    */
-  presentError(res, error) {
+  presentError(res, error, customHeaders = null) {
     const status = error.status || 500;
     const errorResponse = this.formatError(error);
     
-    res.writeHead(status, {
-      'Content-Type': 'application/json',
-      'Cache-Control': 'no-cache'
-    });
+    // Use ResponseHeaders to get proper security headers
+    const contentType = customHeaders && customHeaders['Content-Type'] ? 
+      customHeaders['Content-Type'] : 'application/json';
+    
+    const headers = ResponseHeaders.getHeadersFor(contentType);
+    
+    res.writeHead(status, headers);
     res.end(JSON.stringify(errorResponse));
   }
 }
