@@ -5,6 +5,7 @@
 import http from 'node:http';
 import router from './router.js';
 import { config } from '../adapters/config.js';
+import { ResponseHeaders } from './headers.js';
 
 // Log startup environment
 const env = {
@@ -20,6 +21,13 @@ console.log('[Server Port] Starting in environment:', env);
 const server = http.createServer(async (req, res) => {
   console.log('[Server Port] Request:', req.method, req.url);
   
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204, ResponseHeaders.getDefaultHeaders());
+    res.end();
+    return;
+  }
+  
   try {
     // Use the router to handle the request
     const handled = await router.route(req, res);
@@ -27,10 +35,7 @@ const server = http.createServer(async (req, res) => {
     if (!handled) {
       // If no handler wants this request, send 404
       console.log('[Server Port] No handler found - sending 404');
-      res.writeHead(404, { 
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      });
+      res.writeHead(404, ResponseHeaders.getDefaultHeaders());
       res.end(JSON.stringify({ 
         error: 'Not Found',
         message: `No handler found for ${req.method} ${req.url}`
@@ -39,10 +44,7 @@ const server = http.createServer(async (req, res) => {
   } catch (error) {
     // Handle any errors that occur during request processing
     console.error('[Server Port] Error handling request:', error);
-    res.writeHead(500, { 
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
-    });
+    res.writeHead(500, ResponseHeaders.getDefaultHeaders());
     res.end(JSON.stringify({ 
       error: 'Internal Server Error',
       message: error.message

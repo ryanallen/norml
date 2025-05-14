@@ -1,4 +1,5 @@
 import { Presenter } from '../ports/interfaces.js';
+import { ResponseHeaders } from '../ports/headers.js';
 
 export class DbPresenter extends Presenter {
   format(data) {
@@ -18,12 +19,12 @@ export class DbPresenter extends Presenter {
   }
 
   present(res, data) {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.writeHead(200, ResponseHeaders.getDefaultHeaders());
     res.end(JSON.stringify(this.format(data)));
   }
 
   presentError(res, error) {
-    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.writeHead(500, ResponseHeaders.getDefaultHeaders());
     res.end(JSON.stringify(this.formatError(error)));
   }
 }

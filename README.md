@@ -52,6 +52,7 @@ Core principles of RHOMBUS:
    - Defines interfaces that adapters must implement
    - Handles HTTP requests and routing
    - Orchestrates flow between logic, adapters, and presenters
+   - **Implemented as TypeScript interfaces for compile-time type safety**
 
 2. **Logic Layer**
    - Contains all business rules and validation
@@ -88,6 +89,14 @@ Core principles of RHOMBUS:
 - Interface contracts in ports layer
 - Strict separation of concerns
 - Code review checklist for architectural compliance
+- **TypeScript-based ports implementation:**
+  - Ports are defined as TypeScript interfaces/types
+  - Provides compile-time contract enforcement
+  - Interfaces disappear at runtime (zero overhead)
+  - **Smaller app size and faster downloads for users since interfaces don't exist in compiled code**
+  - **Reduced bundle size means less data transfer and faster initial load times**
+  - Example: `interface UserRepository { findById(id: string): Promise<User> }`
+  - Adapters implement these interfaces with concrete implementations
 
 ### Optimal Test Coverage
 - Integration tests for layer boundaries
@@ -151,4 +160,4 @@ npm test
 Tests run automatically on GitHub Actions for all pull requests and pushes to main branch.
 
 ## Status Page
-The MongoDB connection status page is available at [norml.pages.dev](https://norml.pages.dev).
+The MongoDB connection status page is available at [norml.ai](https://norml.ai).
