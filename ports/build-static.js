@@ -1,5 +1,5 @@
 import { getPageContent } from '../logic/index.js';
-import { generateStatic } from '../ports/static-build.js';
+import { generateStatic } from './static-build.js';
 import { StaticGeneratorAdapter } from '../adapters/static-generator.js';
 import { IndexPresenter } from '../presenters/index.js';
 
@@ -21,4 +21,9 @@ async function build() {
   }
 }
 
-build(); 
+// Only execute directly if run as a script
+if (import.meta.url === `file://${process.argv[1]}`) {
+  build();
+}
+
+export { build }; 

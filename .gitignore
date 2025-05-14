@@ -1,4 +1,9 @@
 .env
 .env.yaml
 .gcloudingnore
-node_modules/ 
+node_modules/
+
+# Test outputs
+test-output/
+tests/coverage/
+test-*/ 

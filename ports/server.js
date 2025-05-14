@@ -44,6 +44,7 @@ const server = http.createServer(async (req, res) => {
   } catch (error) {
     // Handle any errors that occur during request processing
     console.error('[Server Port] Error handling request:', error);
+    console.error('[Server Port] Error stack:', error.stack);
     res.writeHead(500, ResponseHeaders.getDefaultHeaders());
     res.end(JSON.stringify({ 
       error: 'Internal Server Error',
@@ -56,4 +57,5 @@ const server = http.createServer(async (req, res) => {
 const port = env.PORT;
 server.listen(port, () => {
   console.log(`[Server Port] Listening at http://localhost:${port}/`);
+  console.log('[Server Port] MongoDB URI:', process.env.MONGODB_URI ? 'Configured' : 'Not configured');
 }); 

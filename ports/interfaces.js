@@ -25,6 +25,14 @@ export class DbPort {
   async getStatus() {
     throw new Error('Method not implemented');
   }
+  
+  async ping() {
+    throw new Error('Method not implemented');
+  }
+  
+  async getStats() {
+    throw new Error('Method not implemented');
+  }
 }
 
 export class DbValidationPort {
@@ -150,6 +158,16 @@ export class MonitoringPort {
   }
 
   setGauge(name, value, tags = {}) {
+    throw new Error('Method not implemented');
+  }
+}
+
+export class TestCleanupPort {
+  async cleanupTestOutput() {
+    throw new Error('Method not implemented');
+  }
+  
+  async removeDirectory(path) {
     throw new Error('Method not implemented');
   }
 } 
