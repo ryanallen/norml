@@ -7,3 +7,6 @@ node_modules/
 test-output/
 tests/coverage/
 test-*/ 
+
+# Production builds
+index.html 
