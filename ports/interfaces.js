@@ -13,7 +13,7 @@ export class DatabasePort {
   }
 }
 
-export class MongoDBPort {
+export class DbPort {
   async connect(options) {
     throw new Error('Method not implemented');
   }
@@ -27,7 +27,7 @@ export class MongoDBPort {
   }
 }
 
-export class MongoDBValidationPort {
+export class DbValidationPort {
   validateConnection(options) {
     throw new Error('Method not implemented');
   }
@@ -114,7 +114,7 @@ export class StaticGeneratorPort {
   }
 }
 
-export class GoogleCloudPort {
+export class CloudPort {
   async initialize(config) {
     throw new Error('Method not implemented');
   }

@@ -1,16 +1,15 @@
-// This is our database status endpoint
-// It checks if MongoDB is working and tells the browser about it
+// Database status endpoint
+// It checks if the database is working and tells the browser about it
 
 import { db } from '../adapters/db.js';
-import { mongodb } from '../adapters/mongodb.js';
-import { presenter } from '../presenters/db-status.js';
+import { presenter } from '../presenters/db.js';
 
 // Handle a request to check database status
 export async function handleRequest(req, res, testAdapter) {
   if (req.method === 'GET' && req.url === '/api/status') {
     try {
-      console.log('[DB Port] Using adapter:', testAdapter ? 'test' : 'mongodb');
-      const adapter = testAdapter || mongodb;
+      console.log('[DB Port] Using adapter:', testAdapter ? 'test' : 'default');
+      const adapter = testAdapter || db;
       
       // Get basic connection status
       await adapter.connect();

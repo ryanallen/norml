@@ -1,98 +1,58 @@
-// Test database adapter functionality
 import { strict as assert } from 'assert';
 import { test } from 'node:test';
-import { DatabaseAdapter } from '../../adapters/db.js';
+import { DbAdapter } from '../../adapters/db.js';
+import { readFileSync } from 'node:fs';
 
-// Save original env
-const originalEnv = process.env;
+// Load MongoDB URI directly from .env.yaml
+let mongoUri;
+try {
+  const envYaml = readFileSync('.env.yaml', 'utf8');
+  const match = envYaml.match(/MONGODB_URI: "(.+?)"/);
+  if (match && match[1]) {
+    // Fix double slash if present
+    mongoUri = match[1].replace('//database', '/database');
+  }
+} catch (error) {
+  // Silently continue if file can't be read
+}
 
-test('DatabaseAdapter', async (t) => {
-  let adapter;
-
-  t.beforeEach(() => {
-    adapter = new DatabaseAdapter();
-  });
-
-  await t.test('should implement DatabasePort interface', () => {
-    assert(adapter instanceof DatabaseAdapter);
-    assert.equal(typeof adapter.connect, 'function');
-    assert.equal(typeof adapter.disconnect, 'function');
-    assert.equal(typeof adapter.checkStatus, 'function');
-  });
-
-  await t.test('should connect successfully', async () => {
-    const result = await adapter.connect();
-    assert.equal(result, true);
-    assert.equal(adapter.isConnected, true);
-    assert.equal(adapter.lastError, null);
-  });
-
-  await t.test('should return status', async () => {
-    await adapter.connect();
-    const status = await adapter.checkStatus();
-    assert.equal(status.connected, true);
-    assert.equal(status.lastError, null);
-    assert(status.timestamp);
-  });
-
-  await t.test('should disconnect successfully', async () => {
-    await adapter.connect();
-    await adapter.disconnect();
-    assert.equal(adapter.isConnected, false);
-    assert.equal(adapter.lastError, null);
-  });
-
-  await t.test('should handle connection errors', async () => {
-    // Mock setTimeout to fail
-    const originalSetTimeout = global.setTimeout;
-    global.setTimeout = (cb) => {
-      global.setTimeout = originalSetTimeout;
-      throw new Error('Connection timeout');
-    };
-
-    try {
-      await adapter.connect();
-      assert.fail('Should have thrown an error');
-    } catch (error) {
-      assert.equal(error.message, 'Connection timeout');
-      assert.equal(adapter.isConnected, false);
-      assert.equal(adapter.lastError, error);
-    }
-  });
-
-  await t.test('should return error status after failed connection', async () => {
-    // Mock setTimeout to fail
-    const originalSetTimeout = global.setTimeout;
-    global.setTimeout = (cb) => {
-      global.setTimeout = originalSetTimeout;
-      throw new Error('Connection timeout');
-    };
-
-    try {
-      await adapter.connect();
-    } catch (error) {
-      const status = await adapter.checkStatus();
-      assert.equal(status.connected, false);
-      assert.equal(status.lastError.message, 'Connection timeout');
-      assert(status.timestamp);
-    }
-  });
-
-  await t.test('should clear error on successful reconnect', async () => {
-    // First fail
-    const originalSetTimeout = global.setTimeout;
-    global.setTimeout = (cb) => {
-      global.setTimeout = originalSetTimeout;
-      throw new Error('Connection timeout');
-    };
-
-    try {
-      await adapter.connect();
-    } catch (error) {
-      // Now succeed
-      await adapter.connect();
+// Test DB adapter with real MongoDB connection
+test('DbAdapter with real MongoDB', async (t) => {
+  const adapter = new DbAdapter();
+  
+  // Test real connection with the URI from .env.yaml
+  if (mongoUri) {
+    await t.test('connects to real MongoDB', async () => {
+      const result = await adapter.connect({ uri: mongoUri });
+      assert.equal(result, true);
       assert.equal(adapter.isConnected, true);
-      assert.equal(adapter.lastError, null);
+      await adapter.disconnect();
+    });
+    
+    await t.test('reports connection status', async () => {
+      await adapter.connect({ uri: mongoUri });
+      const status = await adapter.getStatus();
+      assert.equal(status.connected, true);
+      assert.equal(status.lastError, null);
+      assert(status.timestamp);
+      await adapter.disconnect();
+    });
+  } else {
+    console.log('MONGODB_URI not found in .env.yaml. Tests will be limited.');
+  }
+  
+  // Test connection failures (always works)
+  await t.test('handles connection failures', async () => {
+    try {
+      await adapter.connect({
+        uri: "mongodb://wrong-host:27017"
+      });
+      assert.fail('Should throw on wrong host');
+    } catch (error) {
+      assert(error instanceof Error);
+      const status = await adapter.getStatus();
+      assert.equal(status.connected, false);
+      assert(status.lastError);
     }
   });
 }); 

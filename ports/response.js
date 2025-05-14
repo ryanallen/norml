@@ -1,10 +1,10 @@
-// MongoDB response handling port
-import { MongoDBEventPort } from './interfaces.js';
+// Generic response handling port
+import { EventPort } from './interfaces.js';
 
-export class MongoDBResponsePort {
+export class ResponsePort {
   constructor(eventHandler) {
-    if (!(eventHandler instanceof MongoDBEventPort)) {
-      throw new Error('Invalid event handler: must implement MongoDBEventPort');
+    if (!(eventHandler instanceof EventPort)) {
+      throw new Error('Invalid event handler: must implement EventPort');
     }
     this.eventHandler = eventHandler;
   }

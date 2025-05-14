@@ -10,9 +10,12 @@
     "test:coverage": "node --test --experimental-test-coverage tests/**/*.test.js",
     "start": "node ports/server.js",
     "dev": "node --watch ports/server.js",
-    "build": "node scripts/build.js"
+    "build": "node scripts/build.js",
+    "clean": "rm -rf node_modules && npm install"
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "dependencies": {
   }
-} 
+}

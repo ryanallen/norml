@@ -1,6 +1,6 @@
 import { Presenter } from '../ports/interfaces.js';
 
-export class MongoDBPresenter extends Presenter {
+export class DbPresenter extends Presenter {
   format(data) {
     return {
       success: true,
@@ -28,4 +28,4 @@ export class MongoDBPresenter extends Presenter {
   }
 }
 
-export const presenter = new MongoDBPresenter(); 
+export const presenter = new DbPresenter(); 

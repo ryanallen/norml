@@ -79,7 +79,6 @@ Core principles of RHOMBUS:
 
 ### Restful APIs
 - OpenAPI/Swagger documentation for all endpoints
-- Contract tests to verify API behavior
 - Standard REST router enforcing conventions
 - Built-in API versioning
 - Consistent response formats
@@ -91,11 +90,16 @@ Core principles of RHOMBUS:
 - Code review checklist for architectural compliance
 
 ### Optimal Test Coverage
-- Jest coverage reports
 - Integration tests for layer boundaries
-- Snapshot tests for presenter outputs
 - E2E tests for critical paths
 - Unit tests for business logic
+
+> Important: Tests must use real implementations, not mocks or stubs. All tests run against:
+> - Actual database connections
+> - Live API endpoints
+> - Real cloud services
+> - Production external dependencies
+> Mock implementations do not provide meaningful test coverage.
 
 ### Microservices
 - Independent service repositories
@@ -116,7 +120,6 @@ Core principles of RHOMBUS:
 - Only format/transform methods
 - Clear interface inheritance
 - No business logic
-- Unit tests for all formats
 
 ### Shipping Continuously
 - Feature flags for deployment control
@@ -132,7 +135,7 @@ Core principles of RHOMBUS:
 - Check import directions
 - Ensure no business logic in presenters
 - Validate REST endpoint patterns
-- Review test coverage
+- Verify tests use real implementations
 
 ### Architecture Reviews
 - Regular team reviews
@@ -149,4 +152,3 @@ Tests run automatically on GitHub Actions for all pull requests and pushes to ma
 
 ## Status Page
 The MongoDB connection status page is available at [norml.pages.dev](https://norml.pages.dev).
-

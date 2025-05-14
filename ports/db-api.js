@@ -1,22 +1,22 @@
-// MongoDB API endpoints port
-import { presenter } from '../presenters/mongodb.js';
+// Database API endpoints port
+import { presenter } from '../presenters/db.js';
 
 export async function handleRequest(req, res) {
-  // Handle MongoDB API endpoints
+  // Handle database API endpoints
   switch (req.url) {
-    case '/api/mongodb/status':
+    case '/api/db/status':
       if (req.method === 'GET') {
         return handleStatusRequest(req, res);
       }
       break;
       
-    case '/api/mongodb/stats':
+    case '/api/db/stats':
       if (req.method === 'GET') {
         return handleStatsRequest(req, res);
       }
       break;
       
-    case '/api/mongodb/ping':
+    case '/api/db/ping':
       if (req.method === 'GET') {
         return handlePingRequest(req, res);
       }
@@ -28,7 +28,7 @@ export async function handleRequest(req, res) {
 
 async function handleStatusRequest(req, res) {
   try {
-    const status = await req.mongodb.getStatus();
+    const status = await req.db.getStatus();
     presenter.present(res, status);
     return true;
   } catch (error) {
@@ -39,7 +39,7 @@ async function handleStatusRequest(req, res) {
 
 async function handleStatsRequest(req, res) {
   try {
-    const stats = await req.mongodb.getStats();
+    const stats = await req.db.getStats();
     presenter.present(res, stats);
     return true;
   } catch (error) {
@@ -50,7 +50,7 @@ async function handleStatsRequest(req, res) {
 
 async function handlePingRequest(req, res) {
   try {
-    const ping = await req.mongodb.ping();
+    const ping = await req.db.ping();
     presenter.present(res, ping);
     return true;
   } catch (error) {
