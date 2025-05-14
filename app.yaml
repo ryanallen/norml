@@ -3,5 +3,5 @@ runtime: nodejs20
 automatic_scaling:
   max_instances: 20
 
-env_variables:
-  MONGODB_URI: "mongodb+srv://ryan:Fgj3kR56HVyDvstW@norml.tlxea13.mongodb.net/?retryWrites=true&w=majority&appName=norml" 
+# Environment variables should be set using Secret Manager
+# DO NOT include secrets directly in this file 

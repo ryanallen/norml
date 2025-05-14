@@ -160,3 +160,17 @@ npm test
 ```
 
 Tests run automatically on GitHub Actions for all pull requests and pushes to main branch.
+
+## Deployment
+
+This application is automatically deployed to Google App Engine when changes are pushed to the main branch.
+
+### Required GitHub Secrets
+
+The following secrets must be configured in the GitHub repository settings:
+
+1. `DEPLOY_TO_GCP`: Service account credentials JSON for deploying to Google Cloud
+2. `MONGO_URI`: MongoDB connection string in the format `mongodb+srv://username:password@hostname/database?options`
+3. `API_BASE`: Base URL for API endpoints (e.g., `https://norml-459701.uc.r.appspot.com`)
+
+These secrets are used by the GitHub Actions workflow to deploy the application securely without exposing sensitive information in the repository.

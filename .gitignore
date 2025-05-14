@@ -1,12 +1,11 @@
+# Environment variables
 .env
 .env.yaml
-.gcloudingnore
+
+# Node.js dependencies
 node_modules/
 
 # Test outputs
 test-output/
 tests/coverage/
 test-*/ 
-
-# Production builds
-index.html 
