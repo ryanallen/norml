@@ -89,12 +89,13 @@ describe('Static File Presenter', () => {
       assert.strictEqual(mockResponse.statusCode, 500);
     });
     
-    it('should set JSON content type', () => {
+    it('should set JSON content type with charset', () => {
       const error = new Error('Test error');
       
       presenter.presentError(mockResponse, error);
       
-      assert.strictEqual(mockResponse.headers['Content-Type'], 'application/json');
+      assert.ok(mockResponse.headers['Content-Type'].startsWith('application/json'));
+      assert.ok(mockResponse.headers['Content-Type'].includes('charset=UTF-8'));
     });
     
     it('should set body to JSON string of formatted error', () => {

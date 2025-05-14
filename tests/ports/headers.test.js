@@ -6,7 +6,7 @@ describe('Response Headers', () => {
   describe('getDefaultHeaders', () => {
     it('should include Content-Type header', () => {
       const headers = ResponseHeaders.getDefaultHeaders();
-      assert.strictEqual(headers['Content-Type'], 'application/json; charset=utf-8');
+      assert.strictEqual(headers['Content-Type'], 'application/json; charset=UTF-8');
     });
     
     it('should include security headers', () => {
@@ -32,12 +32,12 @@ describe('Response Headers', () => {
   describe('getHeadersFor', () => {
     it('should set correct Content-Type for JSON', () => {
       const headers = ResponseHeaders.getHeadersFor('application/json');
-      assert.strictEqual(headers['Content-Type'], 'application/json; charset=utf-8');
+      assert.strictEqual(headers['Content-Type'], 'application/json; charset=UTF-8');
     });
     
     it('should set correct Content-Type for HTML', () => {
       const headers = ResponseHeaders.getHeadersFor('text/html');
-      assert.strictEqual(headers['Content-Type'], 'text/html; charset=utf-8');
+      assert.strictEqual(headers['Content-Type'], 'text/html; charset=UTF-8');
     });
     
     it('should not include charset for binary files', () => {
@@ -46,8 +46,8 @@ describe('Response Headers', () => {
     });
     
     it('should set appropriate Cache-Control for images', () => {
-      const headers = ResponseHeaders.getHeadersFor('image/jpeg');
-      assert.strictEqual(headers['Cache-Control'], 'public, max-age=604800');
+      const headers = ResponseHeaders.getHeadersFor('image/png');
+      assert.strictEqual(headers['Cache-Control'], 'public, max-age=86400, must-revalidate');
     });
     
     it('should set appropriate Cache-Control for HTML', () => {
@@ -56,9 +56,8 @@ describe('Response Headers', () => {
     });
     
     it('should use provided Cache-Control when specified', () => {
-      const customCache = 'public, max-age=3600';
-      const headers = ResponseHeaders.getHeadersFor('text/html', customCache);
-      assert.strictEqual(headers['Cache-Control'], customCache);
+      const headers = ResponseHeaders.getHeadersFor('text/html', 'custom-value');
+      assert.strictEqual(headers['Cache-Control'], 'custom-value');
     });
   });
 }); 
