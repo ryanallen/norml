@@ -44,15 +44,15 @@
         const data = await response.json();
         
         // Handle different endpoint formats
-        if (feature.endpoint === '/api/version') {
+        if (feature.endpoint === '/api/version' || feature.endpoint.includes('/api/version')) {
           updateElement('success', data);
-        } else if (feature.endpoint === '/db') {
-          if (data.status === 'available') {
+        } else if (feature.endpoint === '/api/status' || feature.endpoint.includes('/api/status')) {
+          if (data.success) {
             updateElement('success', data);
-          } else if (data.status === 'error') {
+          } else if (data.error) {
             updateElement('error', data);
           } else {
-            updateElement('error', { error: 'Unexpected status: ' + data.status });
+            updateElement('success', data);
           }
         }
       } catch (error) {
