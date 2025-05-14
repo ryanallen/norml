@@ -1,4 +1,5 @@
 import { Presenter } from '../ports/interfaces.js';
+import { ResponseHeaders } from '../ports/headers.js';
 
 export class VersionPresenter extends Presenter {
   format(version) {
@@ -18,12 +19,12 @@ export class VersionPresenter extends Presenter {
   }
 
   present(response, version) {
-    response.writeHead(200, { 'Content-Type': 'application/json' });
+    response.writeHead(200, ResponseHeaders.getHeadersFor('application/json'));
     response.end(JSON.stringify(this.format(version)));
   }
 
   presentError(response, error) {
-    response.writeHead(500, { 'Content-Type': 'application/json' });
+    response.writeHead(500, ResponseHeaders.getHeadersFor('application/json'));
     response.end(JSON.stringify(this.formatError(error)));
   }
 }

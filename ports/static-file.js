@@ -1,5 +1,6 @@
 // Static file handler port
 import path from 'path';
+import fs from 'fs';
 import staticFileAdapter from '../adapters/static-file.js';
 import { presenter } from '../presenters/static-file.js';
 import { processStaticFileRequest } from '../logic/static-file.js';
@@ -15,18 +16,57 @@ export async function handleRequest(req, res) {
   const url = new URL(req.url, `http://${req.headers.host}`);
   let filePath = url.pathname;
   
-  // Security check - prevent directory traversal
-  if (filePath.includes('..')) {
-    console.log('[Static File] Security warning: Path contains ".."');
-    return false;
-  }
-  
   // Special case for favicon.ico which is commonly requested by browsers
   if (filePath === '/favicon.ico') {
-    filePath = '/favicon.ico';
+    console.log('[Static File] Handling favicon.ico request');
+    
+    // Check if favicon.ico exists
+    const faviconPath = path.join(STATIC_DIR, 'favicon.ico');
+    const exists = await staticFileAdapter.fileExists(faviconPath);
+    
+    if (!exists) {
+      console.log('[Static File] favicon.ico not found, creating a simple one');
+      
+      // If favicon doesn't exist, create a simple one (1x1 transparent pixel)
+      const simpleIconBuffer = Buffer.from([
+        0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x01, 
+        0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x0A, 0x00, 
+        0x00, 0x00, 0x16, 0x00, 0x00, 0x00, 0x28, 0x00, 
+        0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 
+        0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00, 
+        0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+        0x00, 0x00
+      ]);
+      
+      // Use the presenter to serve this simple favicon
+      presenter.present(res, simpleIconBuffer, {
+        'Content-Type': 'image/x-icon',
+        'Cache-Control': 'public, max-age=604800',
+        'X-Content-Type-Options': 'nosniff'
+      });
+      
+      return true;
+    }
+    
+    // If favicon exists, serve it
+    const mimeType = 'image/x-icon';
+    const result = processStaticFileRequest({
+      path: filePath,
+      exists: true,
+      mimeType
+    });
+    
+    if (result.success) {
+      const fileContent = await staticFileAdapter.readFile(faviconPath);
+      presenter.present(res, fileContent, result.headers);
+      console.log(`[Static File] Served favicon.ico`);
+      return true;
+    }
   }
   
-  // Construct the full file path
+  // Handle other static files
   const fullPath = path.join(STATIC_DIR, filePath);
   
   try {

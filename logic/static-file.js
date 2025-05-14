@@ -52,7 +52,8 @@ export function shouldIncludeCharset(mimeType) {
 export function getSecurityHeaders() {
   return {
     'X-Content-Type-Options': 'nosniff',
-    'Content-Security-Policy': "default-src 'self'; script-src 'self';"
+    // Less restrictive CSP that allows necessary JavaScript
+    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';"
   };
 }
 

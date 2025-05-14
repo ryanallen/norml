@@ -1,4 +1,5 @@
 import { Presenter } from '../ports/interfaces.js';
+import { ResponseHeaders } from '../ports/headers.js';
 
 export class IndexPresenter extends Presenter {
   format(content) {
@@ -7,6 +8,8 @@ export class IndexPresenter extends Presenter {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
   <title>${content.title}</title>
 </head>
 <body>
@@ -76,6 +79,8 @@ export class IndexPresenter extends Presenter {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
   <title>Error</title>
 </head>
 <body>
@@ -86,12 +91,12 @@ export class IndexPresenter extends Presenter {
   }
 
   present(res, content) {
-    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.writeHead(200, ResponseHeaders.getHeadersFor('text/html'));
     res.end(this.format(content));
   }
 
   presentError(res, error) {
-    res.writeHead(500, { 'Content-Type': 'text/html' });
+    res.writeHead(500, ResponseHeaders.getHeadersFor('text/html'));
     res.end(this.formatError(error));
   }
 }

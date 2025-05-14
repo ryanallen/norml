@@ -19,12 +19,12 @@ export class DbPresenter extends Presenter {
   }
 
   present(res, data) {
-    res.writeHead(200, ResponseHeaders.getDefaultHeaders());
+    res.writeHead(200, ResponseHeaders.getHeadersFor('application/json'));
     res.end(JSON.stringify(this.format(data)));
   }
 
   presentError(res, error) {
-    res.writeHead(500, ResponseHeaders.getDefaultHeaders());
+    res.writeHead(500, ResponseHeaders.getHeadersFor('application/json'));
     res.end(JSON.stringify(this.formatError(error)));
   }
 }
