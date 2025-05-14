@@ -8,28 +8,17 @@ export class IndexPresenter extends Presenter {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${content.title}</title>
-  <style>
-    body { font-family: sans-serif; max-width: 800px; margin: 2em auto; padding: 0 1em; }
-    .header { margin-bottom: 2em; }
-    .description { color: #666; margin: 1em 0; }
-    .repo-link { display: inline-block; padding: 0.5em 1em; background: #0366d6; color: white; text-decoration: none; border-radius: 4px; margin: 1em 0; }
-    .repo-link:hover { background: #0255b3; }
-    .status { padding: 1em; border-radius: 4px; margin: 1em 0; }
-    .loading { background: #f5f5f5; }
-    .error { background: #fee; }
-    .success { background: #efe; }
-  </style>
 </head>
 <body>
-  <div class="header">
+  <div>
     <h1>${content.title}</h1>
-    <p class="description">${content.description}</p>
-    <a href="${content.repoUrl}" class="repo-link" target="_blank">View on GitHub</a>
+    <p>${content.description}</p>
+    <a href="${content.repoUrl}" target="_blank">View on GitHub</a>
   </div>
   ${content.features.map(feature => `
-    <div class="feature">
+    <div>
       <h2>${feature.name}</h2>
-      <div id="${feature.id}" class="status loading">
+      <div id="${feature.id}">
         ${feature.states.checking.message}
       </div>
     </div>
@@ -40,7 +29,6 @@ export class IndexPresenter extends Presenter {
       const element = document.getElementById(feature.id);
       
       function updateElement(state, content) {
-        element.className = 'status ' + state;
         element.textContent = typeof content === 'object' ? 
           JSON.stringify(content, null, 2) : content;
       }
@@ -89,14 +77,10 @@ export class IndexPresenter extends Presenter {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Error</title>
-  <style>
-    body { font-family: sans-serif; max-width: 800px; margin: 2em auto; padding: 0 1em; }
-    .error { color: red; }
-  </style>
 </head>
 <body>
   <h1>Error</h1>
-  <p class="error">${error.message}</p>
+  <p>${error.message}</p>
 </body>
 </html>`;
   }
