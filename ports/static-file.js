@@ -20,6 +20,13 @@ export async function handleRequest(req, res) {
   if (filePath === '/favicon.ico') {
     console.log('[Static File] Handling favicon.ico request');
     
+    // Create response headers specifically for favicon
+    const faviconHeaders = {
+      'Content-Type': 'image/x-icon',
+      'Cache-Control': 'public, max-age=604800',
+      'X-Content-Type-Options': 'nosniff'
+    };
+    
     // Check if favicon.ico exists
     const faviconPath = path.join(STATIC_DIR, 'favicon.ico');
     const exists = await staticFileAdapter.fileExists(faviconPath);
@@ -41,28 +48,20 @@ export async function handleRequest(req, res) {
       ]);
       
       // Use the presenter to serve this simple favicon
-      presenter.present(res, simpleIconBuffer, {
-        'Content-Type': 'image/x-icon',
-        'Cache-Control': 'public, max-age=604800',
-        'X-Content-Type-Options': 'nosniff'
-      });
+      presenter.present(res, simpleIconBuffer, faviconHeaders);
       
       return true;
     }
     
-    // If favicon exists, serve it
-    const mimeType = 'image/x-icon';
-    const result = processStaticFileRequest({
-      path: filePath,
-      exists: true,
-      mimeType
-    });
-    
-    if (result.success) {
+    // If favicon exists, serve it with proper headers
+    try {
       const fileContent = await staticFileAdapter.readFile(faviconPath);
-      presenter.present(res, fileContent, result.headers);
+      presenter.present(res, fileContent, faviconHeaders);
       console.log(`[Static File] Served favicon.ico`);
       return true;
+    } catch (error) {
+      console.error(`[Static File] Error serving favicon.ico:`, error);
+      return false;
     }
   }
   

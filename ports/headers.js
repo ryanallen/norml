@@ -13,7 +13,7 @@ export class ResponseHeaders {
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', // Supported methods
       'Access-Control-Allow-Headers': 'Content-Type', // Allowed headers
       ...getSecurityHeaders(),
-      'Cache-Control': 'no-cache', // Prevent caching
+      'Cache-Control': 'no-store', // Prevent caching without must-revalidate
       'Access-Control-Expose-Headers': 'Content-Length, Content-Type' // Expose these headers to the browser
     };
   }

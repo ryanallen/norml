@@ -20,11 +20,11 @@ export function determineCachePolicy(mimeType) {
     // Cache images for longer (1 week)
     return 'public, max-age=604800';
   } else if (mimeType === 'text/html') {
-    // Don't cache HTML
-    return 'no-cache';
+    // Don't cache HTML but avoid must-revalidate
+    return 'no-store';
   } else if (mimeType === 'application/json') {
-    // Don't cache API responses
-    return 'no-cache';
+    // Don't cache API responses but avoid must-revalidate
+    return 'no-store';
   } else {
     // Default cache policy (1 day)
     return 'public, max-age=86400';
@@ -52,8 +52,8 @@ export function shouldIncludeCharset(mimeType) {
 export function getSecurityHeaders() {
   return {
     'X-Content-Type-Options': 'nosniff',
-    // Less restrictive CSP that allows necessary JavaScript
-    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';"
+    // Much more permissive CSP that allows eval and external resources
+    'Content-Security-Policy': "default-src * 'self' data: blob: https:; script-src * 'self' 'unsafe-inline' 'unsafe-eval'; style-src * 'self' 'unsafe-inline';"
   };
 }
 
