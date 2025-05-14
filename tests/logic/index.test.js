@@ -6,7 +6,9 @@ import { getPageContent, handleApiResponse, handleStatusResponse } from '../../l
 test('Page Content Generator', async (t) => {
   await t.test('generates correct page content', () => {
     const content = getPageContent();
-    assert.equal(content.title, 'Database Status');
+    assert.equal(content.title, 'NORML App Status');
+    assert.equal(content.description, 'Node.js application implementing RHOMBUS architecture');
+    assert.equal(content.repoUrl, 'https://github.com/ryanallen/norml');
     
     const [dbFeature, versionFeature] = content.features;
     assert.equal(content.features.length, 2);

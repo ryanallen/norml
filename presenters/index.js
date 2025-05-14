@@ -10,6 +10,10 @@ export class IndexPresenter extends Presenter {
   <title>${content.title}</title>
   <style>
     body { font-family: sans-serif; max-width: 800px; margin: 2em auto; padding: 0 1em; }
+    .header { margin-bottom: 2em; }
+    .description { color: #666; margin: 1em 0; }
+    .repo-link { display: inline-block; padding: 0.5em 1em; background: #0366d6; color: white; text-decoration: none; border-radius: 4px; margin: 1em 0; }
+    .repo-link:hover { background: #0255b3; }
     .status { padding: 1em; border-radius: 4px; margin: 1em 0; }
     .loading { background: #f5f5f5; }
     .error { background: #fee; }
@@ -17,7 +21,11 @@ export class IndexPresenter extends Presenter {
   </style>
 </head>
 <body>
-  <h1>${content.title}</h1>
+  <div class="header">
+    <h1>${content.title}</h1>
+    <p class="description">${content.description}</p>
+    <a href="${content.repoUrl}" class="repo-link" target="_blank">View on GitHub</a>
+  </div>
   ${content.features.map(feature => `
     <div class="feature">
       <h2>${feature.name}</h2>

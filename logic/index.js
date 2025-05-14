@@ -1,7 +1,9 @@
 // Index page logic
 export function getPageContent() {
   return {
-    title: 'Database Status',
+    title: 'NORML App Status',
+    description: 'Node.js application implementing RHOMBUS architecture',
+    repoUrl: 'https://github.com/ryanallen/norml',
     features: [
       {
         id: 'db-status',

@@ -8,6 +8,8 @@ test('IndexPresenter', async (t) => {
   await t.test('formats content correctly', () => {
     const content = {
       title: 'Test Page',
+      description: 'Test Description',
+      repoUrl: 'https://github.com/test/repo',
       features: [{
         id: 'test-feature',
         name: 'Test Feature',
@@ -21,6 +23,9 @@ test('IndexPresenter', async (t) => {
     const html = presenter.format(content);
     assert(html.includes('<title>Test Page</title>'));
     assert(html.includes('<h1>Test Page</h1>'));
+    assert(html.includes('Test Description'));
+    assert(html.includes('href="https://github.com/test/repo"'));
+    assert(html.includes('View on GitHub'));
     assert(html.includes('id="test-feature"'));
     assert(html.includes('Test Feature'));
     assert(html.includes('Checking...'));
