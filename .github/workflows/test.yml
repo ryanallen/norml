@@ -13,6 +13,4 @@ jobs:
       with:
         node-version: '20'
     - run: npm ci
-    - run: npm test
-      env:
-        MONGO_URI: ${{ secrets.MONGO_URI }} 
+    - run: npm test 
