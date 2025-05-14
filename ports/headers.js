@@ -1,13 +1,11 @@
-// Standard HTTP headers utility for the ports layer
-// Centralizes header management for all responses
-
+// Centralized HTTP headers utility for ports layer
 export class ResponseHeaders {
   static getDefaultHeaders() {
     return {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type'
+      'Access-Control-Allow-Origin': '*', // Allow cross-origin requests
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', // Supported methods
+      'Access-Control-Allow-Headers': 'Content-Type' // Allowed headers
     };
   }
 
