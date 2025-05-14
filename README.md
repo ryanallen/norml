@@ -1,5 +1,7 @@
 # NORML App
 
+**[Live Status Page →](https://norml.ai)**
+
 A Node.js application implementing RHOMBUS architecture:
 - **R**estful APIs
 - **H**exagonal ports & adapters
@@ -158,6 +160,3 @@ npm test
 ```
 
 Tests run automatically on GitHub Actions for all pull requests and pushes to main branch.
-
-## Status Page
-The MongoDB connection status page is available at [norml.ai](https://norml.ai).
