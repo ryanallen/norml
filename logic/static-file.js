@@ -17,17 +17,20 @@ export function isPathSafe(path) {
  */
 export function determineCachePolicy(mimeType) {
   if (mimeType.startsWith('image/')) {
-    // Cache images for longer (1 week)
-    return 'public, max-age=604800';
+    // Cache images for a day with revalidation
+    return 'public, max-age=86400, must-revalidate';
   } else if (mimeType === 'text/html') {
-    // Don't cache HTML but avoid must-revalidate
+    // Don't cache HTML
     return 'no-store';
   } else if (mimeType === 'application/json') {
-    // Don't cache API responses but avoid must-revalidate
+    // Don't cache API responses
     return 'no-store';
+  } else if (mimeType === 'text/plain') {
+    // Cache text files but revalidate
+    return 'public, max-age=14400, must-revalidate';
   } else {
-    // Default cache policy (1 day)
-    return 'public, max-age=86400';
+    // Default cache policy
+    return 'public, max-age=14400, must-revalidate';
   }
 }
 
@@ -52,8 +55,8 @@ export function shouldIncludeCharset(mimeType) {
 export function getSecurityHeaders() {
   return {
     'X-Content-Type-Options': 'nosniff',
-    // Much more permissive CSP that allows eval and external resources
-    'Content-Security-Policy': "default-src * 'self' data: blob: https:; script-src * 'self' 'unsafe-inline' 'unsafe-eval'; style-src * 'self' 'unsafe-inline';"
+    'Content-Security-Policy': "default-src * 'self' data: blob: https:; script-src * 'self' 'unsafe-inline'; style-src * 'self' 'unsafe-inline'; frame-ancestors 'self';",
+    'X-Frame-Options': 'SAMEORIGIN'
   };
 }
 

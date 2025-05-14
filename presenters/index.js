@@ -9,7 +9,7 @@ export class IndexPresenter extends Presenter {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta http-equiv="Content-Security-Policy" content="default-src * 'self' data: blob: https:; script-src * 'self' 'unsafe-inline' 'unsafe-eval'; style-src * 'self' 'unsafe-inline';">
+  <meta http-equiv="Content-Security-Policy" content="default-src * 'self' data: blob: https:; script-src * 'self' 'unsafe-inline'; style-src * 'self' 'unsafe-inline'; frame-ancestors 'self';">
   <title>${content.title}</title>
 </head>
 <body>
@@ -80,7 +80,7 @@ export class IndexPresenter extends Presenter {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta http-equiv="Content-Security-Policy" content="default-src * 'self' data: blob: https:; script-src * 'self' 'unsafe-inline' 'unsafe-eval'; style-src * 'self' 'unsafe-inline';">
+  <meta http-equiv="Content-Security-Policy" content="default-src * 'self' data: blob: https:; script-src * 'self' 'unsafe-inline'; style-src * 'self' 'unsafe-inline'; frame-ancestors 'self';">
   <title>Error</title>
 </head>
 <body>

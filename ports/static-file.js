@@ -23,7 +23,7 @@ export async function handleRequest(req, res) {
     // Create response headers specifically for favicon
     const faviconHeaders = {
       'Content-Type': 'image/x-icon',
-      'Cache-Control': 'public, max-age=604800',
+      'Cache-Control': 'public, max-age=14400, must-revalidate',
       'X-Content-Type-Options': 'nosniff'
     };
     
