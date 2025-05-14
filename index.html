@@ -4,35 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NORML App Status</title>
-  <style>
-    body { font-family: sans-serif; max-width: 800px; margin: 2em auto; padding: 0 1em; }
-    .header { margin-bottom: 2em; }
-    .description { color: #666; margin: 1em 0; }
-    .repo-link { display: inline-block; padding: 0.5em 1em; background: #0366d6; color: white; text-decoration: none; border-radius: 4px; margin: 1em 0; }
-    .repo-link:hover { background: #0255b3; }
-    .status { padding: 1em; border-radius: 4px; margin: 1em 0; }
-    .loading { background: #f5f5f5; }
-    .error { background: #fee; }
-    .success { background: #efe; }
-  </style>
 </head>
 <body>
-  <div class="header">
+  <div>
     <h1>NORML App Status</h1>
-    <p class="description">Node.js application implementing RHOMBUS architecture</p>
-    <a href="https://github.com/ryanallen/norml" class="repo-link" target="_blank">View on GitHub</a>
+    <p>Node.js application implementing RHOMBUS architecture</p>
+    <a href="https://github.com/ryanallen/norml" target="_blank">View on GitHub</a>
   </div>
   
-    <div class="feature">
+    <div>
       <h2>Database Status</h2>
-      <div id="db-status" class="status loading">
+      <div id="db-status">
         Checking...
       </div>
     </div>
   
-    <div class="feature">
+    <div>
       <h2>Version</h2>
-      <div id="version-info" class="status loading">
+      <div id="version-info">
         Loading...
       </div>
     </div>
@@ -43,7 +32,6 @@
       const element = document.getElementById(feature.id);
       
       function updateElement(state, content) {
-        element.className = 'status ' + state;
         element.textContent = typeof content === 'object' ? 
           JSON.stringify(content, null, 2) : content;
       }
