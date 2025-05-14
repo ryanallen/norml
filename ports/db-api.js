@@ -1,5 +1,6 @@
 // Database API endpoints port
 import { presenter } from '../presenters/db.js';
+import { ResponseHeaders } from './headers.js';
 
 export async function handleRequest(req, res) {
   // Handle database API endpoints
@@ -29,7 +30,12 @@ export async function handleRequest(req, res) {
 async function handleStatusRequest(req, res) {
   try {
     const status = await req.db.getStatus();
-    presenter.present(res, status);
+    
+    // Use ResponseHeaders directly for proper Cache-Control
+    const headers = ResponseHeaders.getHeadersFor('application/json');
+    res.writeHead(200, headers);
+    res.end(JSON.stringify(presenter.format(status)));
+    
     return true;
   } catch (error) {
     presenter.presentError(res, error);
@@ -40,7 +46,12 @@ async function handleStatusRequest(req, res) {
 async function handleStatsRequest(req, res) {
   try {
     const stats = await req.db.getStats();
-    presenter.present(res, stats);
+    
+    // Use ResponseHeaders directly for proper Cache-Control
+    const headers = ResponseHeaders.getHeadersFor('application/json');
+    res.writeHead(200, headers);
+    res.end(JSON.stringify(presenter.format(stats)));
+    
     return true;
   } catch (error) {
     presenter.presentError(res, error);
@@ -51,7 +62,12 @@ async function handleStatsRequest(req, res) {
 async function handlePingRequest(req, res) {
   try {
     const ping = await req.db.ping();
-    presenter.present(res, ping);
+    
+    // Use ResponseHeaders directly for proper Cache-Control
+    const headers = ResponseHeaders.getHeadersFor('application/json');
+    res.writeHead(200, headers);
+    res.end(JSON.stringify(presenter.format(ping)));
+    
     return true;
   } catch (error) {
     presenter.presentError(res, error);
