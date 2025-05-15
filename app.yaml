@@ -10,7 +10,6 @@ handlers:
     http_headers:
       X-Content-Type-Options: nosniff
       X-Frame-Options: SAMEORIGIN
-      Content-Security-Policy: "default-src * 'self' data: blob: https:; script-src * 'self' 'unsafe-inline'; style-src * 'self' 'unsafe-inline'; frame-ancestors 'self';"
       Cache-Control: no-store, must-revalidate
       Access-Control-Allow-Origin: "*"
       Access-Control-Allow-Methods: "GET, POST, OPTIONS"

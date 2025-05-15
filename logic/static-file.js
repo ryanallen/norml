@@ -55,7 +55,6 @@ export function shouldIncludeCharset(mimeType) {
 export function getSecurityHeaders() {
   return {
     'X-Content-Type-Options': 'nosniff',
-    'Content-Security-Policy': "default-src * 'self' data: blob: https:; script-src * 'self' 'unsafe-inline'; style-src * 'self' 'unsafe-inline'; frame-ancestors 'self';",
     'X-Frame-Options': 'SAMEORIGIN'
   };
 }

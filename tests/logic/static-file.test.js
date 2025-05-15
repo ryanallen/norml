@@ -66,14 +66,10 @@ describe('Static File Logic', () => {
       const headers = getSecurityHeaders();
       assert.strictEqual(headers['X-Content-Type-Options'], 'nosniff');
     });
-
-    it('should return security headers with Content-Security-Policy', () => {
+    
+    it('should return security headers with X-Frame-Options', () => {
       const headers = getSecurityHeaders();
-      assert.ok(headers['Content-Security-Policy']);
-      assert.ok(headers['Content-Security-Policy'].includes('unsafe-inline'));
-      // We're not using unsafe-eval in our current implementation
-      // If unsafe-eval is added later, uncomment this line
-      // assert.ok(headers['Content-Security-Policy'].includes('unsafe-eval'));
+      assert.strictEqual(headers['X-Frame-Options'], 'SAMEORIGIN');
     });
   });
 
