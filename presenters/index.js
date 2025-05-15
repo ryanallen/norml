@@ -9,7 +9,6 @@ export class IndexPresenter extends Presenter {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta http-equiv="Content-Security-Policy" content="default-src * 'self' data: blob: https:; script-src * 'self' 'unsafe-inline'; style-src * 'self' 'unsafe-inline'; frame-ancestors 'self';">
   <title>${content.title}</title>
 </head>
 <body>
@@ -28,8 +27,8 @@ export class IndexPresenter extends Presenter {
   `).join('')}
 
   <script>
-    async function checkStatus(feature) {
-      const element = document.getElementById(feature.id);
+    async function checkStatus(id, name, endpoint, states) {
+      const element = document.getElementById(id);
       
       function updateElement(state, content) {
         element.textContent = typeof content === 'object' ? 
@@ -37,16 +36,16 @@ export class IndexPresenter extends Presenter {
       }
 
       try {
-        const response = await fetch(feature.endpoint);
+        const response = await fetch(endpoint);
         if (!response.ok) {
           throw new Error(\`HTTP error! status: \${response.status}\`);
         }
         const data = await response.json();
         
         // Handle different endpoint formats
-        if (feature.endpoint === '/api/version') {
+        if (endpoint.includes('/api/version')) {
           updateElement('success', data);
-        } else if (feature.endpoint === '/db') {
+        } else if (endpoint.includes('/api/status')) {
           if (data.status === 'available') {
             updateElement('success', data);
           } else if (data.status === 'error') {
@@ -65,7 +64,12 @@ export class IndexPresenter extends Presenter {
 
     document.addEventListener('DOMContentLoaded', () => {
       ${content.features.map(feature => `
-        checkStatus(${JSON.stringify(feature)});
+        checkStatus(
+          "${feature.id}", 
+          "${feature.name}", 
+          "${feature.endpoint}",
+          ${JSON.stringify(feature.states)}
+        );
       `).join('')}
     });
   </script>
@@ -80,7 +84,6 @@ export class IndexPresenter extends Presenter {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta http-equiv="Content-Security-Policy" content="default-src * 'self' data: blob: https:; script-src * 'self' 'unsafe-inline'; style-src * 'self' 'unsafe-inline'; frame-ancestors 'self';">
   <title>Error</title>
 </head>
 <body>
