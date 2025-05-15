@@ -76,9 +76,9 @@ export class StaticGeneratorAdapter extends StaticGeneratorPort {
   async copyAssets(assetsDir = path.join(rootDir, 'presenters/static/assets'), targetDir) {
     try {
       // If no target directory is specified, use the default
+      // But always use presenters/static/assets as the target to avoid creating duplicates
       if (!targetDir) {
-        const outputDir = path.dirname(path.join(rootDir, 'index.html'));
-        targetDir = path.join(outputDir, 'assets');
+        targetDir = path.join(rootDir, 'presenters/static/assets');
       }
       
       // Ensure the target directory exists
