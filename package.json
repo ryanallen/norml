@@ -5,9 +5,9 @@
   "type": "module",
   "main": "app.js",
   "scripts": {
-    "test": "node --test --experimental-test-coverage=\"directory=coverage\" \"**/*test*.js\" && node --no-warnings logic/tools/cleanup.js fullCleanup",
-    "test:watch": "node --test --watch \"**/*test*.js\"",
-    "test:coverage": "node --test --experimental-test-coverage=\"directory=coverage\" \"**/*test*.js\" && node --no-warnings logic/tools/cleanup.js fullCleanup",
+    "test": "node --test --experimental-test-coverage=\"directory=coverage\" \"./{adapters,logic,ports,presenters}/**/tests/**/*test*.js\" && node --no-warnings logic/tools/cleanup.js fullCleanup",
+    "test:watch": "node --test --watch \"./{adapters,logic,ports,presenters}/**/tests/**/*test*.js\"",
+    "test:coverage": "node --test --experimental-test-coverage=\"directory=coverage\" \"./{adapters,logic,ports,presenters}/**/tests/**/*test*.js\" && node --no-warnings logic/tools/cleanup.js fullCleanup",
     "start": "node app.js",
     "dev": "node --watch app.js",
     "build": "node ports/static/build.js",
