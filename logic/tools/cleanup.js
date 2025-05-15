@@ -36,7 +36,7 @@ const filesToRemove = [
   'check-headers.js',
   'check-version.js',
   'check-root.js',
-  'index.html',
+  // 'index.html', // Removed to prevent local file deletion
   'tests/presenters/index.test.js',
   'assets/js/status-checker.js',
   'ports/build-static.js',
