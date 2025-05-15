@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <title>NORML App Status</title>
+</head>
+<body>
+  <div>
+    <h1>NORML App Status</h1>
+    <p>Node.js application implementing RHOMBUS architecture</p>
+    <a href="https://github.com/ryanallen/norml" target="_blank">View on GitHub</a>
+  </div>
+  
+    <div>
+      <h2>Database Status</h2>
+      <div id="db-status">
+        Checking...
+      </div>
+    </div>
+  
+    <div>
+      <h2>Version</h2>
+      <div id="version-info">
+        Loading...
+      </div>
+    </div>
+  
+
+  <script>
+    async function checkStatus(id, name, endpoint, states) {
+      const element = document.getElementById(id);
+      
+      function updateElement(state, content) {
+        element.textContent = typeof content === 'object' ? 
+          JSON.stringify(content, null, 2) : content;
+      }
+
+      try {
+        const response = await fetch(endpoint);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        
+        // Handle different endpoint formats
+        if (endpoint.includes('/api/version')) {
+          updateElement('success', data);
+        } else if (endpoint.includes('/api/status')) {
+          if (data.status === 'available') {
+            updateElement('success', data);
+          } else if (data.status === 'error') {
+            updateElement('error', data);
+          } else {
+            updateElement('error', { error: 'Unexpected status: ' + data.status });
+          }
+        }
+      } catch (error) {
+        console.error('API call failed:', error);
+        updateElement('error', { 
+          error: error.message || 'Failed to fetch status'
+        });
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      
+        checkStatus(
+          "db-status", 
+          "Database Status", 
+          "https://norml-459701.uc.r.appspot.com/api/status",
+          {"checking":{"type":"loading","message":"Checking..."},"success":{"type":"success"},"error":{"type":"error","message":"Error checking status: {error}"}}
+        );
+      
+        checkStatus(
+          "version-info", 
+          "Version", 
+          "https://norml-459701.uc.r.appspot.com/api/version",
+          {"checking":{"type":"loading","message":"Loading..."},"success":{"type":"success"},"error":{"type":"error","message":"Error loading version"}}
+        );
+      
+    });
+  </script>
+</body>
+</html>
