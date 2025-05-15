@@ -9,7 +9,7 @@ export class ResponseHeaders {
   static getDefaultHeaders() {
     return {
       'Content-Type': 'application/json; charset=utf-8',
-      'Access-Control-Allow-Origin': '*', // Allow cross-origin requests
+      'Access-Control-Allow-Origin': 'https://www.norml.ai', // Specific domain instead of wildcard
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', // Supported methods
       'Access-Control-Allow-Headers': 'Content-Type', // Allowed headers
       ...getSecurityHeaders(),
@@ -32,7 +32,7 @@ export class ResponseHeaders {
     headers['Cache-Control'] = cacheControl || determineCachePolicy(contentType);
     
     // Add CORS and security headers
-    headers['Access-Control-Allow-Origin'] = '*';
+    headers['Access-Control-Allow-Origin'] = 'https://www.norml.ai';
     headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS';
     headers['Access-Control-Allow-Headers'] = 'Content-Type';
     headers['Access-Control-Expose-Headers'] = 'Content-Length, Content-Type';
