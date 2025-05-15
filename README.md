@@ -43,9 +43,29 @@ Core principles of RHOMBUS:
 ```
 /app
   /adapters     # Implements interfaces defined in ports
+    /cloud      # Cloud service adapters (GCP, etc.)
+    /db         # Database adapters
+    /env        # Environment configuration
+    /static     # Static file handling
+    /test       # Test utilities
+    /version    # Version information
   /logic        # Contains business rules and domain logic
+    /db         # Database-related business logic
+    /static     # Static file business logic
+    /tools      # Utility tools
+    /version    # Version-related business logic
   /ports        # Defines interfaces and handles HTTP
+    /api        # API endpoints
+    /core       # Core components (server, router, headers, etc.)
+    /db         # Database-related ports
+    /interfaces # Interface definitions
+    /static     # Static file handling ports
   /presenters   # Formats data for display (NO business logic)
+    /api        # API response formatting
+    /db         # Database response formatting
+    /html       # HTML formatting
+    /main       # Main page formatting
+    /static     # Static file formatting
 ```
 
 ### Layer Responsibilities
@@ -91,14 +111,29 @@ Core principles of RHOMBUS:
 - Interface contracts in ports layer
 - Strict separation of concerns
 - Code review checklist for architectural compliance
-- **TypeScript-based ports implementation:**
-  - Ports are defined as TypeScript interfaces/types
-  - Provides compile-time contract enforcement
-  - Interfaces disappear at runtime (zero overhead)
-  - **Smaller app size and faster downloads for users since interfaces don't exist in compiled code**
-  - **Reduced bundle size means less data transfer and faster initial load times**
-  - Example: `interface UserRepository { findById(id: string): Promise<User> }`
-  - Adapters implement these interfaces with concrete implementations
+
+Our implementation follows the ports and adapters pattern:
+
+1. **Ports (Interfaces)**: Define contracts in `ports/interfaces/ports.js`.
+   - `DatabasePort`, `VersionPort`, `StaticFilePort`, etc.
+   - These interfaces define what adapters must implement.
+
+2. **Core Components**: Common infrastructure in `ports/core/`.
+   - Server, Router, Headers, Request/Response handling
+
+3. **Adapters**: Concrete implementations of interfaces.
+   - Database adapters connect to MongoDB 
+   - File adapters provide file system access
+   - Cloud adapters connect to GCP services
+
+4. **Domain Logic**: Business rules in the `logic` directory.
+   - No dependencies on external frameworks
+   - Pure business logic with clear responsibilities
+
+5. **Presenters**: Format data for different views.
+   - HTML for browser viewing
+   - JSON for API responses
+   - No business logic, only formatting
 
 ### Optimal Test Coverage
 - Integration tests for layer boundaries

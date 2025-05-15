@@ -1,6 +1,9 @@
 # Environment variables
 .env
 .env.yaml
+config/secrets.yaml
+config/local.json
+adapters/env/secrets.json
 
 # Node.js dependencies
 node_modules/

@@ -3,16 +3,18 @@
   "version": "0.1.0",
   "description": "NORML - Node REST Microservice Library",
   "type": "module",
-  "main": "./ports/server.js",
+  "main": "app.js",
   "scripts": {
-    "test": "node --test --experimental-test-coverage=\"directory=tests/coverage\" tests/**/*.test.js && node --no-warnings ports/test-cleanup.js",
-    "test:watch": "node --test --watch tests/**/*.test.js",
-    "test:coverage": "node --test --experimental-test-coverage=\"directory=tests/coverage\" tests/**/*.test.js && node --no-warnings ports/test-cleanup.js",
-    "start": "node ports/server.js",
-    "dev": "node --watch ports/server.js",
-    "build": "node ports/build-static.js",
+    "test": "node --test --experimental-test-coverage=\"directory=coverage\" \"**/*test*.js\" && node --no-warnings logic/tools/cleanup.js fullCleanup",
+    "test:watch": "node --test --watch \"**/*test*.js\"",
+    "test:coverage": "node --test --experimental-test-coverage=\"directory=coverage\" \"**/*test*.js\" && node --no-warnings logic/tools/cleanup.js fullCleanup",
+    "start": "node app.js",
+    "dev": "node --watch app.js",
+    "build": "node ports/static/build.js",
     "clean": "rm -rf node_modules && npm install",
-    "clean:tests": "node --no-warnings ports/test-cleanup.js"
+    "clean:tests": "node --no-warnings --experimental-permission logic/tools/cleanup.js fullCleanup",
+    "clean:tests:win": ".\\clean-tests.bat",
+    "clean:all": "node --no-warnings --experimental-permission logic/tools/cleanup.js fullCleanup && npm run clean"
   },
   "engines": {
     "node": ">=20.0.0"
