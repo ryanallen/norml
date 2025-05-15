@@ -173,4 +173,4 @@ The following secrets must be configured in the GitHub repository settings:
 2. `MONGO_URI`: MongoDB connection string in the format `mongodb+srv://username:password@hostname/database?options`
 3. `API_BASE`: Base URL for API endpoints (e.g., `https://norml-459701.uc.r.appspot.com`)
 
-These secrets are used by the GitHub Actions workflow to deploy the application securely without exposing sensitive information in the repository.
+These secrets are used by the GitHub Actions workflow to deploy the application securely without exposing sensitive information in the repository. 
