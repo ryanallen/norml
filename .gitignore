@@ -11,4 +11,7 @@ node_modules/
 # Test outputs
 test-output/
 tests/coverage/
-test-*/ 
+test-*/
+
+# Ignore index.html in root (GitHub-specific file)
+/index.html 
