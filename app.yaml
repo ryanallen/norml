@@ -1,5 +1,7 @@
 runtime: nodejs20
 
+instance_class: F2
+
 automatic_scaling:
   max_instances: 20
 
@@ -8,9 +10,9 @@ handlers:
     script: auto
     secure: always
     http_headers:
-      X-Content-Type-Options: nosniff
-      X-Frame-Options: SAMEORIGIN
-      Cache-Control: no-store, must-revalidate
+      X-Content-Type-Options: "nosniff"
+      X-Frame-Options: "SAMEORIGIN"
+      Cache-Control: "no-store, must-revalidate"
       Access-Control-Allow-Origin: "*"
       Access-Control-Allow-Methods: "GET, POST, OPTIONS"
       Access-Control-Allow-Headers: "Content-Type"

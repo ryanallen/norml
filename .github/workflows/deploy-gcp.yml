@@ -31,6 +31,20 @@ jobs:
         env:
           API_BASE: ${{ secrets.API_BASE }}
       
+      # Create a simplified app.yaml for deployment
+      - name: Create deployment app.yaml
+        run: |
+          cat > deploy.yaml << 'EOL'
+          runtime: nodejs20
+          instance_class: F2
+          automatic_scaling:
+            max_instances: 20
+          handlers:
+            - url: /.*
+              script: auto
+              secure: always
+          EOL
+      
       - id: auth
         name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -38,10 +52,12 @@ jobs:
           credentials_json: ${{ secrets.DEPLOY_TO_GCP }}
           export_environment_variables: true
           create_credentials_file: true
-          
+      
       - name: Deploy to App Engine
         uses: google-github-actions/deploy-appengine@v2
         with:
           project_id: norml-459701
-          deliverables: app.yaml
+          deliverables: deploy.yaml
+          version: v1
+          promote: false
           env_vars: MONGODB_URI=${{ secrets.MONGO_URI }},API_BASE=${{ secrets.API_BASE }} 
