@@ -14,6 +14,15 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('featuresLoaded', function() {
       initStatusCheckers();
     });
+    
+    // Handle feature loading errors
+    document.addEventListener('featuresError', function(event) {
+      const elements = document.querySelectorAll('.status-item');
+      elements.forEach(element => {
+        element.className = 'error';
+        element.textContent = event.detail?.error || 'Failed to load features';
+      });
+    });
   }
 });
 
@@ -58,6 +67,13 @@ function checkFeature(feature) {
       if (!response.ok) {
         throw new Error(`HTTP error ${response.status}`);
       }
+      
+      // Check content type before parsing JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Invalid content type: Expected JSON');
+      }
+      
       return response.json();
     })
     .then(data => {
@@ -66,6 +82,7 @@ function checkFeature(feature) {
     })
     .catch(error => {
       // Error state
+      console.error(`Error checking feature ${feature.id}:`, error);
       updateElementState(element, 'error', feature.states, { error: error.message });
     });
 }
@@ -78,11 +95,14 @@ function checkFeature(feature) {
  * @param {Object} data - Optional data to include in the message
  */
 function updateElementState(element, state, states, data = {}) {
-  const stateConfig = states[state];
-  
-  if (!stateConfig) {
+  if (!states || !states[state]) {
+    console.warn(`Missing state configuration for '${state}'`);
+    element.className = state || 'error';
+    element.textContent = JSON.stringify(data) || 'Unknown state';
     return;
   }
+  
+  const stateConfig = states[state];
   
   // Add state class
   element.className = stateConfig.type || state;
@@ -92,9 +112,11 @@ function updateElementState(element, state, states, data = {}) {
     let message = stateConfig.message;
     
     // Replace placeholders in the message with actual data
-    Object.entries(data).forEach(([key, value]) => {
-      message = message.replace(`{${key}}`, value);
-    });
+    if (data && typeof data === 'object') {
+      Object.entries(data).forEach(([key, value]) => {
+        message = message.replace(`{${key}}`, value);
+      });
+    }
     
     element.textContent = message;
   } else {

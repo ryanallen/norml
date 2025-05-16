@@ -9,6 +9,9 @@ export class IndexPresenter extends BasePresenter {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <title>${content.title}</title>
+  <!-- Load feature loader first -->
+  <script src="/presenters/static/assets/js/feature-loader.js"></script>
+  <!-- Then load status checker which depends on it -->
   <script src="/presenters/static/assets/js/status-checker.js"></script>
 </head>
 <body>
@@ -20,20 +23,24 @@ export class IndexPresenter extends BasePresenter {
   ${content.features.map(feature => `
     <div>
       <h2>${feature.name}</h2>
-      <div id="${feature.id}">
+      <div id="${feature.id}" class="status-item">
         ${feature.states.checking.message}
       </div>
     </div>
   `).join('')}
 
+  <!-- Prevent inline script block by using JSON.parse -->
   <script>
-    // Pre-define features in a global variable for the status checker
-    window.appFeatures = ${JSON.stringify(content.features.map(feature => ({
+    // Define features object as a standard JSON string
+    const featuresJSON = '${JSON.stringify(content.features.map(feature => ({
       id: feature.id,
       name: feature.name,
       endpoint: feature.endpoint,
       states: feature.states
-    })))};
+    })))}';
+    
+    // Parse the JSON string safely
+    window.appFeatures = JSON.parse(featuresJSON);
   </script>
 </body>
 </html>`;

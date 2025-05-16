@@ -126,8 +126,8 @@ export function getContentSecurityPolicy() {
     // Restrictive default policy
     "default-src 'self'",
     
-    // Script sources - external scripts only, no inline or eval
-    "script-src 'self'",
+    // Script sources - allow 'self' and needed inline scripts
+    "script-src 'self' 'unsafe-inline'",
     
     // Style sources - keep unsafe-inline for now
     "style-src 'self' 'unsafe-inline'",
