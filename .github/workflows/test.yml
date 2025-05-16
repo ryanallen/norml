@@ -13,4 +13,5 @@ jobs:
       with:
         node-version: '20'
     - run: npm ci
-    - run: npm test 
+    - name: Run tests with explicit paths
+      run: node --test --experimental-test-coverage="directory=coverage" "adapters/*/tests/**/*test*.js" "logic/*/tests/**/*test*.js" "ports/*/tests/**/*test*.js" "presenters/*/tests/**/*test*.js" && node --no-warnings logic/tools/cleanup.js fullCleanup 
