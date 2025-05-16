@@ -31,23 +31,17 @@ jobs:
         env:
           API_BASE: ${{ secrets.API_BASE }}
       
-      - name: Authenticate with GCP
+      - id: auth
+        name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.DEPLOY_TO_GCP }}
-          token_format: 'access_token'
-      
-      - name: Setup gcloud CLI
-        uses: google-github-actions/setup-gcloud@v2
+          export_environment_variables: true
+          create_credentials_file: true
+          
+      - name: Deploy to App Engine
+        uses: google-github-actions/deploy-appengine@v2
         with:
-          install_components: 'beta,app-engine-python'
-      
-      - name: Verify gcloud installation
-        run: |
-          gcloud --version
-          gcloud auth list
-      
-      - name: Deploy to Google App Engine
-        run: |
-          echo "Deploying to Google App Engine..."
-          gcloud app deploy app.yaml --quiet --project="norml-459701" --set-env-vars="MONGODB_URI=${{ secrets.MONGO_URI }},API_BASE=${{ secrets.API_BASE }}" 
+          project_id: norml-459701
+          deliverables: app.yaml
+          env_vars: MONGODB_URI=${{ secrets.MONGO_URI }},API_BASE=${{ secrets.API_BASE }} 
