@@ -111,4 +111,12 @@ router.addRoute('GET', '/api/build-info', async (req, res) => {
   return versionHandler(req, res);
 });
 
+router.addRoute('GET', '/api/status/db', async (req, res) => {
+  if (!dbHandler) {
+    const { handleRequest } = await import('../db/db-status.js');
+    dbHandler = handleRequest;
+  }
+  return dbHandler(req, res);
+});
+
 export default router; 

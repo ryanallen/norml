@@ -44,7 +44,6 @@ export const gcloudignoreContent = `# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # For more information, run:
 #   $ gcloud topic gcloudignore
 #
-.git
 .gitignore
 .env
 adapters/env/secrets.json

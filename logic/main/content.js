@@ -10,7 +10,7 @@ export function getPageContent() {
       {
         id: 'db-status',
         name: 'Database Status',
-        endpoint: '/api/status',
+        endpoint: '/api/status/db',
         states: {
           checking: { type: 'loading', message: 'Checking...' },
           success: { type: 'success' },

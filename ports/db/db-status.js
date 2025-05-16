@@ -25,7 +25,7 @@ export function initialize(deps = {}) {
 
 // Handle a request to check database status
 export async function handleRequest(req, res, testAdapter) {
-  if (req.method === 'GET' && req.url === '/api/status') {
+  if (req.method === 'GET' && (req.url === '/api/status' || req.url === '/api/status/db')) {
     try {
       // Lazy load dependencies if not injected
       if (!dbAdapter || !dbPresenter) {
