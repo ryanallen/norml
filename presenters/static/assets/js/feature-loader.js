@@ -9,9 +9,11 @@ window.appFeatures = [];
 
 // Fetch features data from API
 document.addEventListener('DOMContentLoaded', function() {
-  // Create endpoint URL based on current location
-  const apiUrl = `${window.location.origin}/api/features`;
+  // Use the injected API_BASE_URL or fall back to current origin
+  const apiBase = window.API_BASE_URL || window.location.origin;
+  const apiUrl = `${apiBase}/api/features`;
   
+  console.log('Feature loader: Using API base:', apiBase);
   console.log('Feature loader: Fetching features from API');
   
   fetch(apiUrl)

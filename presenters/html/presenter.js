@@ -1,5 +1,6 @@
 import { BasePresenter, getResponseHeaders } from '../base.js';
 import { getContentSecurityPolicy } from '../../logic/static/file.js';
+import { secrets } from '../../adapters/env/secrets.js';
 
 /**
  * HTML Presenter for formatting content as HTML
@@ -18,6 +19,9 @@ export class HtmlPresenter extends BasePresenter {
     try {
       const { title, description, repoUrl, features } = data;
       
+      // Get API base URL from environment or use a default
+      const apiBaseUrl = secrets.get('API_BASE') || 'https://norml-459701.uc.r.appspot.com';
+      
       // Features section HTML
       const featuresHtml = features ? features.map(feature => `
     <div>
@@ -35,6 +39,10 @@ export class HtmlPresenter extends BasePresenter {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <title>${title}</title>
+  <!-- Inject API base URL before loading scripts -->
+  <script>
+    window.API_BASE_URL = "${apiBaseUrl}";
+  </script>
   <!-- Load feature loader first, then status checker -->
   <script src="/presenters/static/assets/js/feature-loader.js"></script>
   <script src="/presenters/static/assets/js/status-checker.js"></script>
