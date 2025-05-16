@@ -129,29 +129,28 @@ export function getSecurityHeaders() {
  * CLOUDFLARE UPDATE INSTRUCTIONS:
  * Replace existing Cloudflare CSP headers with:
  * default-src 'self'; 
- * script-src 'self'; 
- * style-src 'self'; 
+ * script-src 'self' 'unsafe-inline'; 
+ * style-src 'self' 'unsafe-inline'; 
  * connect-src 'self' https://norml-459701.uc.r.appspot.com;
  * object-src 'none'; 
  * base-uri 'none'; 
  * frame-ancestors 'none'
  * 
+ * NOTE: We're temporarily keeping 'unsafe-inline' for scripts and styles 
+ * until we fully implement nonce-based CSP. This is required for the status page to work.
+ * 
  * @returns {string} - CSP header value
  */
 export function getContentSecurityPolicy() {
-  // Generate random nonce for inline scripts and styles
-  const scriptNonce = crypto.randomUUID();
-  const styleNonce = crypto.randomUUID();
-  
   return [
     // Restrictive default policy
     "default-src 'self'",
     
-    // Script sources - remove unsafe-inline and unsafe-eval
-    `script-src 'self' 'nonce-${scriptNonce}'`,
+    // Script sources - temporarily keep unsafe-inline for functionality
+    "script-src 'self' 'unsafe-inline'",
     
-    // Style sources - remove unsafe-inline
-    `style-src 'self' 'nonce-${styleNonce}'`,
+    // Style sources - temporarily keep unsafe-inline for functionality
+    "style-src 'self' 'unsafe-inline'",
     
     // Keep existing connect-src
     "connect-src 'self' https://norml-459701.uc.r.appspot.com",

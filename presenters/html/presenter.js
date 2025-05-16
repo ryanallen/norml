@@ -8,19 +8,15 @@ export class HtmlPresenter extends BasePresenter {
   /**
    * Format the data as HTML
    * @param {Object} data - The data to format
-   * @param {Object} options - Additional options
-   * @param {string} options.scriptNonce - Nonce for script tags
-   * @param {string} options.styleNonce - Nonce for style tags
    * @returns {string} HTML string
    */
-  format(data, options = {}) {
+  format(data) {
     if (!data) {
       return this.formatError(new Error('No data provided'));
     }
     
     try {
       const { title, description, repoUrl, features } = data;
-      const { scriptNonce, styleNonce } = options;
       
       // Features section HTML
       const featuresHtml = features ? features.map(feature => `
@@ -53,7 +49,7 @@ export class HtmlPresenter extends BasePresenter {
   
   ${featuresHtml}
 
-  <script${scriptNonce ? ` nonce="${scriptNonce}"` : ''}>
+  <script>
     // Pre-define features in a global variable for the status checker
     window.appFeatures = ${featuresJson};
   </script>
@@ -90,21 +86,14 @@ export class HtmlPresenter extends BasePresenter {
    * @param {string} requestOrigin - Optional origin for CORS headers
    */
   present(res, data, requestOrigin = null) {
-    // Get CSP policy
-    const policy = getContentSecurityPolicy();
-    
-    // Extract nonces from the policy
-    const scriptNonce = policy.match(/script-src[^;]*'nonce-([^']+)'/)?.[1];
-    const styleNonce = policy.match(/style-src[^;]*'nonce-([^']+)'/)?.[1];
-    
     // Add CSP header to response
     const headers = {
       ...getResponseHeaders('text/html'),
-      'Content-Security-Policy': policy
+      'Content-Security-Policy': getContentSecurityPolicy()
     };
     
     res.writeHead(200, headers);
-    res.end(this.format(data, { scriptNonce, styleNonce }));
+    res.end(this.format(data));
   }
   
   /**
@@ -114,13 +103,10 @@ export class HtmlPresenter extends BasePresenter {
    * @param {string} requestOrigin - Optional origin for CORS headers
    */
   presentError(res, error, requestOrigin = null) {
-    // Get CSP policy
-    const policy = getContentSecurityPolicy();
-    
     // Add CSP header to response
     const headers = {
       ...getResponseHeaders('text/html'),
-      'Content-Security-Policy': policy
+      'Content-Security-Policy': getContentSecurityPolicy()
     };
     
     res.writeHead(500, headers);
