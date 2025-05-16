@@ -42,9 +42,6 @@ jobs:
         run: |
           cat > deploy.yaml << 'EOL'
           runtime: nodejs20
-          instance_class: F2
-          automatic_scaling:
-            max_instances: 20
           handlers:
             - url: /.*
               script: auto
@@ -64,6 +61,5 @@ jobs:
         with:
           project_id: norml-459701
           deliverables: deploy.yaml
-          version: v1
           promote: true
           env_vars: MONGODB_URI=${{ secrets.MONGO_URI }},API_BASE=${{ secrets.API_BASE }} 
