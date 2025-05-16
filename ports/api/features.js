@@ -1,10 +1,5 @@
 /**
- * Features API - RHOMBUS Architecture
- * 
- * This port handles feature data API requests and responses
- * following the RHOMBUS pattern:
- * - Port handles HTTP interface
- * - Logic layer provides business rules (feature data)
+ * Features API
  */
 
 import { getResponseHeaders } from '../core/headers.js';

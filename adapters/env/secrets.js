@@ -3,7 +3,6 @@ import path from 'node:path';
 
 /**
  * Secrets adapter for loading configuration from secure sources
- * Follows RHOMBUS architecture
  */
 export class SecretsAdapter {
   constructor() {

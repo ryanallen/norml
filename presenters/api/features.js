@@ -1,10 +1,5 @@
 /**
- * Features API Presenter - RHOMBUS Architecture
- * 
- * This presenter formats feature data for API responses.
- * Following RHOMBUS pattern:
- * - Presenter only handles formatting
- * - No business logic in this layer
+ * Features API Presenter
  */
 
 import { BasePresenter, getResponseHeaders } from '../base.js';

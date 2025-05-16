@@ -41,7 +41,6 @@ export class Router {
     
     // Check for pattern-based handlers
     if (req.url.startsWith('/api/')) {
-      // Lazy load handlers if not injected
       if (!versionHandler) {
         const { handleVersionRequest } = await import('../api/version.js');
         versionHandler = handleVersionRequest;
@@ -78,7 +77,7 @@ export class Router {
 
 export const router = new Router();
 
-// Register routes (lazy init of handlers will occur when needed)
+// Register routes
 router.addRoute('GET', '/', async (req, res, context = {}) => {
   if (!mainHandler) {
     const { handleMainRequest } = await import('../main/handler.js');
@@ -122,7 +121,6 @@ router.addRoute('GET', '/api/build-info', async (req, res, context = {}) => {
 // Import feature handlers
 import { handleFeaturesRequest } from '../api/features.js';
 
-// Find the routes array and add new route
 router.addRoute('GET', '/api/features', handleFeaturesRequest);
 
 export default router; 

@@ -1,11 +1,7 @@
 /**
  * Feature Loader Script
  * 
- * This script fetches feature data from the API and initializes the global
- * appFeatures object that will be used by the status checker.
- * 
- * This approach allows us to maintain a strict Content-Security-Policy
- * without using 'unsafe-inline' or hash-specific scripts.
+ * Fetches feature data from the API and initializes the global appFeatures object
  */
 
 // Initialize empty features array

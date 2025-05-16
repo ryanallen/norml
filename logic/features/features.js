@@ -1,9 +1,5 @@
 /**
- * Features Logic Implementation - RHOMBUS Architecture
- * 
- * Contains pure business logic for feature management
- * - No dependencies on HTTP, presentation, or external systems
- * - Pure business rules and data management
+ * Features Logic Implementation
  */
 
 /**

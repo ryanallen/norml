@@ -10,10 +10,6 @@ import { corsConfig } from '../../adapters/env/cors-config.js';
 
 export class ResponseHeaders {
   static getDefaultHeaders(requestOrigin = null) {
-    // IMPORTANT: Cloudflare has the following CSP headers set that we need to coordinate with:
-    // default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; 
-    // style-src 'self' 'unsafe-inline'; connect-src 'self' https://norml-459701.uc.r.appspot.com;
-    
     // Use the CORS logic to generate proper headers based on request origin
     const corsHeaders = generateCorsHeaders(
       requestOrigin, 

@@ -1,10 +1,5 @@
 /**
- * Features Logic - RHOMBUS Architecture
- * 
- * This module contains the business logic for features
- * Following RHOMBUS pattern:
- * - Pure business logic with no dependencies on external systems
- * - No knowledge of HTTP, presentation, or data sources
+ * Features Logic
  */
 
 export * from './features.js';

@@ -1,6 +1,5 @@
 /**
  * Process a static file request
- * Contains the business logic for responding to static file requests
  * 
  * @param {Object} request - Request information
  * @param {string} request.path - File path
@@ -54,9 +53,6 @@ export function processStaticFileRequest(fileInfo) {
     headers
   };
 }
-
-// Static file logic
-// Contains business rules for static file handling
 
 /**
  * Determines if a path is safe (no directory traversal)
@@ -119,18 +115,9 @@ export function getSecurityHeaders() {
 
 /**
  * Generates a secure Content Security Policy
- * Replaces Cloudflare's default policy with a more secure version
- * 
- * SECURITY IMPLEMENTATION NOTES:
- * Previous Cloudflare headers had security issues:
- * - 'unsafe-inline' in script-src and style-src: Major XSS risk
- * - 'unsafe-eval' in script-src: Allows code injection
- * 
+ *
  * CLOUDFLARE UPDATE INSTRUCTIONS:
- * Replace existing Cloudflare CSP headers with (all on one line):
  * default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://norml-459701.uc.r.appspot.com; object-src 'none'; base-uri 'none'; frame-ancestors 'none'
- * 
- * NOTE: We've removed the hash and unsafe-inline for scripts, now using only external JS files.
  * 
  * @returns {string} - CSP header value
  */
@@ -142,7 +129,7 @@ export function getContentSecurityPolicy() {
     // Script sources - external scripts only, no inline or eval
     "script-src 'self'",
     
-    // Style sources - keep unsafe-inline for now (can be hashed later)
+    // Style sources - keep unsafe-inline for now
     "style-src 'self' 'unsafe-inline'",
     
     // Keep existing connect-src

@@ -28,7 +28,6 @@ export class HtmlPresenter extends BasePresenter {
     </div>
   `).join('\n  ') : '';
       
-      // Remove inline script with features JSON
       return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -81,7 +80,6 @@ export class HtmlPresenter extends BasePresenter {
    * @param {string} requestOrigin - Optional origin for CORS headers
    */
   present(res, data, requestOrigin = null) {
-    // Add CSP header to response
     const headers = {
       ...getResponseHeaders('text/html'),
       'Content-Security-Policy': getContentSecurityPolicy()
@@ -98,7 +96,6 @@ export class HtmlPresenter extends BasePresenter {
    * @param {string} requestOrigin - Optional origin for CORS headers
    */
   presentError(res, error, requestOrigin = null) {
-    // Add CSP header to response
     const headers = {
       ...getResponseHeaders('text/html'),
       'Content-Security-Policy': getContentSecurityPolicy()

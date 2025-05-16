@@ -1,6 +1,5 @@
 /**
  * CORS logic
- * Contains pure business logic for handling Cross-Origin Resource Sharing
  */
 
 /**
@@ -21,7 +20,7 @@ export function determineAllowedOrigin(requestOrigin, allowedOrigins) {
     return requestOrigin;
   }
   
-  // Default fallback - in strict mode could return null instead
+  // Default fallback
   return '*';
 }
 

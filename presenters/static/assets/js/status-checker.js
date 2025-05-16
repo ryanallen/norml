@@ -1,10 +1,7 @@
 /**
  * Status Checker Script
  * 
- * This script checks the status of application features by:
- * 1. Finding all status elements in the page
- * 2. Making API calls to the corresponding endpoints
- * 3. Updating the UI based on the response
+ * Checks the status of application features by making API calls and updating the UI
  */
 
 // Wait for the DOM to be fully loaded
@@ -13,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (window.appFeatures && window.appFeatures.length > 0) {
     initStatusCheckers();
   } else {
-    // Otherwise, wait for features to be loaded by feature-loader.js
+    // Wait for features to be loaded by feature-loader.js
     document.addEventListener('featuresLoaded', function() {
       initStatusCheckers();
     });

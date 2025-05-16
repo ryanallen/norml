@@ -1,11 +1,10 @@
 // Main application entry point for NORML App
-// Following RHOMBUS architecture with clear layer separation
 
 // Load environment variables and secrets first
 import { secrets } from './adapters/env/secrets.js';
 import { configAPI } from './ports/api/config.js';
 
-// Initialize configuration files in rhombus structure
+// Initialize configuration files
 try {
   // Initialize all configuration files
   const configSuccess = configAPI.initialize();
@@ -16,7 +15,7 @@ try {
 
 // Load configuration from secrets file
 try {
-  // Load from secrets.json following RHOMBUS architecture
+  // Load from secrets.json
   secrets.loadAll();
   
   // Log essential environment variables for debugging
