@@ -21,8 +21,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
       
-      - name: Run tests with explicit paths
-        run: node --test --experimental-test-coverage="directory=coverage" "adapters/*/tests/**/*test*.js" "logic/*/tests/**/*test*.js" "ports/*/tests/**/*test*.js" "presenters/*/tests/**/*test*.js" && node --no-warnings logic/tools/cleanup.js fullCleanup
+      - name: Run tests
+        run: |
+          TEST_FILES=$(find adapters logic ports presenters -path "*/tests/*test*.js")
+          node --test --experimental-test-coverage="directory=coverage" $TEST_FILES && node --no-warnings logic/tools/cleanup.js fullCleanup
       
       - name: Generate static HTML
         run: node ports/static/build.js
