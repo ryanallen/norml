@@ -9,8 +9,15 @@
 
 // Wait for the DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-  // Initialize all status checkers
-  initStatusCheckers();
+  // Check if features are already loaded
+  if (window.appFeatures && window.appFeatures.length > 0) {
+    initStatusCheckers();
+  } else {
+    // Otherwise, wait for features to be loaded by feature-loader.js
+    document.addEventListener('featuresLoaded', function() {
+      initStatusCheckers();
+    });
+  }
 });
 
 /**

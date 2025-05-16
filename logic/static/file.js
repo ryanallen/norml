@@ -127,17 +127,10 @@ export function getSecurityHeaders() {
  * - 'unsafe-eval' in script-src: Allows code injection
  * 
  * CLOUDFLARE UPDATE INSTRUCTIONS:
- * Replace existing Cloudflare CSP headers with:
- * default-src 'self'; 
- * script-src 'self' 'unsafe-inline'; 
- * style-src 'self' 'unsafe-inline'; 
- * connect-src 'self' https://norml-459701.uc.r.appspot.com;
- * object-src 'none'; 
- * base-uri 'none'; 
- * frame-ancestors 'none'
+ * Replace existing Cloudflare CSP headers with (all on one line):
+ * default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://norml-459701.uc.r.appspot.com; object-src 'none'; base-uri 'none'; frame-ancestors 'none'
  * 
- * NOTE: We're temporarily keeping 'unsafe-inline' for scripts and styles 
- * until we fully implement nonce-based CSP. This is required for the status page to work.
+ * NOTE: We've removed the hash and unsafe-inline for scripts, now using only external JS files.
  * 
  * @returns {string} - CSP header value
  */
@@ -146,10 +139,10 @@ export function getContentSecurityPolicy() {
     // Restrictive default policy
     "default-src 'self'",
     
-    // Script sources - temporarily keep unsafe-inline for functionality
-    "script-src 'self' 'unsafe-inline'",
+    // Script sources - external scripts only, no inline or eval
+    "script-src 'self'",
     
-    // Style sources - temporarily keep unsafe-inline for functionality
+    // Style sources - keep unsafe-inline for now (can be hashed later)
     "style-src 'self' 'unsafe-inline'",
     
     // Keep existing connect-src

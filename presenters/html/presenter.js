@@ -28,9 +28,7 @@ export class HtmlPresenter extends BasePresenter {
     </div>
   `).join('\n  ') : '';
       
-      // Serialize features for client-side JavaScript
-      const featuresJson = features ? JSON.stringify(features) : '[]';
-      
+      // Remove inline script with features JSON
       return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,6 +36,8 @@ export class HtmlPresenter extends BasePresenter {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <title>${title}</title>
+  <!-- Load feature loader first, then status checker -->
+  <script src="/presenters/static/assets/js/feature-loader.js"></script>
   <script src="/presenters/static/assets/js/status-checker.js"></script>
 </head>
 <body>
@@ -48,11 +48,6 @@ export class HtmlPresenter extends BasePresenter {
   </div>
   
   ${featuresHtml}
-
-  <script>
-    // Pre-define features in a global variable for the status checker
-    window.appFeatures = ${featuresJson};
-  </script>
 </body>
 </html>`;
     } catch (error) {

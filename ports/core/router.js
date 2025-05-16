@@ -119,4 +119,10 @@ router.addRoute('GET', '/api/build-info', async (req, res, context = {}) => {
   return versionHandler(req, res, context);
 });
 
+// Import feature handlers
+import { handleFeaturesRequest } from '../api/features.js';
+
+// Find the routes array and add new route
+router.addRoute('GET', '/api/features', handleFeaturesRequest);
+
 export default router; 
