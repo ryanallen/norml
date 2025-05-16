@@ -5,6 +5,8 @@
 import http from 'node:http';
 import router from './router.js';
 import { ResponseHeaders } from './headers.js';
+// Import secrets adapter so we can access configuration
+import { secrets } from '../../adapters/env/secrets.js';
 
 export class ServerPort {
   constructor(configProvider = null) {
@@ -118,8 +120,6 @@ export function startServer(port = null) {
   if (port) {
     process.env.PORT = port;
   }
-  
-    // Import secrets adapter so we can access configuration  import { secrets } from '../../adapters/env/secrets.js';
   
   // Log all environment variables to help debug
   console.log('[Server] Starting with MONGODB_URI:', secrets.has('MONGODB_URI') ? 'Present' : 'Missing');

@@ -2,6 +2,11 @@
 
 **[Live Status Page →](https://norml.ai)**
 
+## IMPORTANT: Repository Structure Rules
+- **ONLY** these directories are allowed in the root: `adapters`, `logic`, `ports`, and `presenters`
+- All configuration and code must be organized within this structure
+- No new folders should be created in the root directory
+
 A Node.js application implementing RHOMBUS architecture:
 - **R**estful APIs
 - **H**exagonal ports & adapters

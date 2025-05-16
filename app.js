@@ -3,6 +3,16 @@
 
 // Load environment variables and secrets first
 import { secrets } from './adapters/env/secrets.js';
+import { configAPI } from './ports/api/config.js';
+
+// Initialize configuration files in rhombus structure
+try {
+  // Initialize all configuration files
+  const configSuccess = configAPI.initialize();
+  console.log('[App] Configuration initialization:', configSuccess ? 'Success' : 'Failed');
+} catch (error) {
+  console.error('[App] Configuration error:', error.message);
+}
 
 // Load configuration from secrets file
 try {
