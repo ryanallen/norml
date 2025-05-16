@@ -1,7 +1,6 @@
-import { Presenter } from '../../ports/interfaces/ports.js';
-import { ResponseHeaders } from '../../ports/core/headers.js';
+import { BasePresenter, getResponseHeaders } from '../base.js';
 
-export class IndexPresenter extends Presenter {
+export class IndexPresenter extends BasePresenter {
   format(content) {
     return `<!DOCTYPE html>
 <html lang="en">
@@ -57,12 +56,12 @@ export class IndexPresenter extends Presenter {
   }
 
   present(res, content) {
-    res.writeHead(200, ResponseHeaders.getHeadersFor('text/html'));
+    res.writeHead(200, getResponseHeaders('text/html'));
     res.end(this.format(content));
   }
 
   presentError(res, error) {
-    res.writeHead(500, ResponseHeaders.getHeadersFor('text/html'));
+    res.writeHead(500, getResponseHeaders('text/html'));
     res.end(this.formatError(error));
   }
 }

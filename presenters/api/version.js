@@ -1,7 +1,6 @@
-import { Presenter } from '../../ports/interfaces/ports.js';
-import { ResponseHeaders } from '../../ports/core/headers.js';
+import { BasePresenter, getResponseHeaders } from '../base.js';
 
-export class VersionPresenter extends Presenter {
+export class VersionPresenter extends BasePresenter {
   format(version) {
     return {
       status: 'available',
@@ -19,25 +18,13 @@ export class VersionPresenter extends Presenter {
   }
 
   present(response, version) {
-    const headers = ResponseHeaders.getHeadersFor('application/json');
-    
-    // Ensure X-Content-Type-Options is set
-    if (!headers['X-Content-Type-Options']) {
-      headers['X-Content-Type-Options'] = 'nosniff';
-    }
-    
+    const headers = getResponseHeaders('application/json');
     response.writeHead(200, headers);
     response.end(JSON.stringify(this.format(version)));
   }
 
   presentError(response, error) {
-    const headers = ResponseHeaders.getHeadersFor('application/json');
-    
-    // Ensure X-Content-Type-Options is set
-    if (!headers['X-Content-Type-Options']) {
-      headers['X-Content-Type-Options'] = 'nosniff';
-    }
-    
+    const headers = getResponseHeaders('application/json');
     response.writeHead(500, headers);
     response.end(JSON.stringify(this.formatError(error)));
   }

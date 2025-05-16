@@ -1,33 +1,36 @@
 // Static file handler port
 import path from 'path';
-import fs from 'fs';
 import { fileURLToPath } from 'url';
-import fsPromises from 'fs/promises';
-import { StaticFilePort } from '../interfaces/ports.js';
+import { URL } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.join(__dirname, '../..');
 
-// Map file extensions to MIME types
-const mimeTypes = {
-  '.html': 'text/html',
-  '.js': 'text/javascript',
-  '.css': 'text/css',
-  '.json': 'application/json',
-  '.png': 'image/png',
-  '.jpg': 'image/jpeg',
-  '.jpeg': 'image/jpeg',
-  '.gif': 'image/gif',
-  '.svg': 'image/svg+xml',
-  '.ico': 'image/x-icon',
-  '.txt': 'text/plain',
-  '.pdf': 'application/pdf',
-  '.woff': 'font/woff',
-  '.woff2': 'font/woff2',
-  '.ttf': 'font/ttf',
-  '.eot': 'font/eot',
-  '.otf': 'font/otf'
-};
+// Store references for dependency injection
+let staticFileAdapter = null;
+let staticFilePresenter = null;
+let staticFileLogic = null;
+
+/**
+ * Initialize this port with the required dependencies
+ * @param {Object} deps Dependencies object
+ * @param {Object} deps.adapter The static file adapter implementation
+ * @param {Object} deps.presenter The static file presenter implementation
+ * @param {Function} deps.logic The static file processing logic
+ */
+export function initialize(deps = {}) {
+  staticFileAdapter = deps.adapter || null;
+  staticFilePresenter = deps.presenter || null;
+  staticFileLogic = deps.logic || null;
+  
+  console.log('[Static File Port] Initialized with deps:', {
+    hasAdapter: !!staticFileAdapter,
+    hasPresenter: !!staticFilePresenter,
+    hasLogic: !!staticFileLogic
+  });
+  
+  return { handleStaticFile };
+}
 
 // Export the handler function for use in the router
 export async function handleStaticFile(req, res) {
@@ -35,14 +38,23 @@ export async function handleStaticFile(req, res) {
   const url = new URL(req.url, `http://${req.headers.host}`);
   let filePath = url.pathname;
   
-  // Get references to the adapters and presenters needed
-  const { staticFileAdapter } = await import('../../adapters/static/file.js');
-  const { presenter } = await import('../../presenters/static/file.js');
-  const { processStaticFileRequest } = await import('../../logic/static/file.js');
+  // Lazy load dependencies if not injected
+  if (!staticFileAdapter || !staticFilePresenter || !staticFileLogic) {
+    const { staticFileAdapter: defaultAdapter } = !staticFileAdapter ? 
+      await import('../../adapters/static/file.js') : { staticFileAdapter: null };
+    const { presenter: defaultPresenter } = !staticFilePresenter ?
+      await import('../../presenters/static/file.js') : { presenter: null };
+    const { processStaticFileRequest: defaultLogic } = !staticFileLogic ?
+      await import('../../logic/static/file.js') : { processStaticFileRequest: null };
+    
+    staticFileAdapter = staticFileAdapter || defaultAdapter;
+    staticFilePresenter = staticFilePresenter || defaultPresenter;
+    staticFileLogic = staticFileLogic || defaultLogic;
+  }
   
   // Special case for favicon.ico
   if (filePath === '/favicon.ico') {
-    return handleFavicon(req, res, staticFileAdapter, presenter);
+    return handleFavicon(req, res, staticFileAdapter, staticFilePresenter);
   }
 
   // Base directory for static files
@@ -55,7 +67,7 @@ export async function handleStaticFile(req, res) {
     const mimeType = staticFileAdapter.getMimeType(fullPath);
     
     // Process the request in the logic layer
-    const result = processStaticFileRequest({
+    const result = staticFileLogic({
       path: filePath,
       exists,
       mimeType
@@ -71,7 +83,7 @@ export async function handleStaticFile(req, res) {
     const fileContent = await staticFileAdapter.readFile(fullPath);
     
     // Use the presenter to format and send the response
-    presenter.present(res, fileContent, result.headers);
+    staticFilePresenter.present(res, fileContent, result.headers);
     
     console.log(`[Static File] Served: ${filePath} (${mimeType})`);
     return true;
@@ -82,7 +94,7 @@ export async function handleStaticFile(req, res) {
 }
 
 // Handle favicon requests specially
-async function handleFavicon(req, res, staticFileAdapter, presenter) {
+async function handleFavicon(req, res, adapter, presenter) {
   console.log('[Static File] Handling favicon.ico request');
   
   // Create response headers specifically for favicon
@@ -95,23 +107,14 @@ async function handleFavicon(req, res, staticFileAdapter, presenter) {
   // Check if favicon.ico exists
   const STATIC_DIR = path.join(process.cwd());
   const faviconPath = path.join(STATIC_DIR, 'favicon.ico');
-  const exists = await staticFileAdapter.fileExists(faviconPath);
+  const exists = await adapter.fileExists(faviconPath);
   
   if (!exists) {
     console.log('[Static File] favicon.ico not found, creating a simple one');
     
-    // If favicon doesn't exist, create a simple one (1x1 transparent pixel)
-    const simpleIconBuffer = Buffer.from([
-      0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x01, 
-      0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x0A, 0x00, 
-      0x00, 0x00, 0x16, 0x00, 0x00, 0x00, 0x28, 0x00, 
-      0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 
-      0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00, 
-      0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 
-      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-      0x00, 0x00
-    ]);
+    // Load the fallback icon
+    const { getFallbackFaviconBuffer } = await import('../../logic/static/favicon.js');
+    const simpleIconBuffer = await getFallbackFaviconBuffer();
     
     // Use the presenter to serve this simple favicon
     presenter.present(res, simpleIconBuffer, faviconHeaders);
@@ -121,7 +124,7 @@ async function handleFavicon(req, res, staticFileAdapter, presenter) {
   
   // If favicon exists, serve it with proper headers
   try {
-    const fileContent = await staticFileAdapter.readFile(faviconPath);
+    const fileContent = await adapter.readFile(faviconPath);
     presenter.present(res, fileContent, faviconHeaders);
     console.log(`[Static File] Served favicon.ico`);
     return true;

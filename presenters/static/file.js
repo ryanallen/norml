@@ -1,11 +1,10 @@
-import { Presenter } from '../../ports/interfaces/ports.js';
-import { ResponseHeaders } from '../../ports/core/headers.js';
+import { BasePresenter, getResponseHeaders } from '../base.js';
 
 /**
  * Static File Presenter
  * Formats static file responses to send to clients
  */
-export class StaticFilePresenter extends Presenter {
+export class StaticFilePresenter extends BasePresenter {
   /**
    * Format a successful static file response
    * @param {Buffer} fileContent - The file content to serve
@@ -68,16 +67,10 @@ export class StaticFilePresenter extends Presenter {
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
     }
     
-    // Use ResponseHeaders to get proper security headers
-    const contentType = res.getHeader('Content-Type') || 'application/json';
-    const securityHeaders = ResponseHeaders.getHeadersFor(contentType);
-    
-    // Apply security headers
-    Object.entries(securityHeaders).forEach(([key, value]) => {
-      if (!res.getHeader(key)) {
-        res.setHeader(key, value);
-      }
-    });
+    // Apply security headers if not already set
+    if (!res.getHeader('X-Content-Type-Options')) {
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+    }
     
     // Set status and send error message
     res.statusCode = status;

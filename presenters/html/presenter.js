@@ -1,9 +1,9 @@
-import { Presenter } from '../../ports/interfaces/ports.js';
+import { BasePresenter, getResponseHeaders } from '../base.js';
 
 /**
  * HTML Presenter for formatting content as HTML
  */
-export class HtmlPresenter extends Presenter {
+export class HtmlPresenter extends BasePresenter {
   /**
    * Format the data as HTML
    * @param {Object} data - The data to format
@@ -76,5 +76,25 @@ export class HtmlPresenter extends Presenter {
   <p>${message}</p>
 </body>
 </html>`;
+  }
+  
+  /**
+   * Present data to the response
+   * @param {Object} res - HTTP response object
+   * @param {any} data - Data to present
+   */
+  present(res, data) {
+    res.writeHead(200, getResponseHeaders('text/html'));
+    res.end(this.format(data));
+  }
+  
+  /**
+   * Present error to the response
+   * @param {Object} res - HTTP response object
+   * @param {Error} error - Error to present
+   */
+  presentError(res, error) {
+    res.writeHead(500, getResponseHeaders('text/html'));
+    res.end(this.formatError(error));
   }
 } 

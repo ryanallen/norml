@@ -1,15 +1,44 @@
 // Database status endpoint
 // It checks if the database is working and tells the browser about it
 
-import { db } from '../../adapters/db/mongodb.js';
-import { presenter } from '../../presenters/db/status.js';
+// Store adapter and presenter references for dependency injection
+let dbAdapter = null;
+let dbPresenter = null;
+
+/**
+ * Initialize this port with the required dependencies
+ * @param {Object} deps Dependencies object
+ * @param {Object} deps.adapter The database adapter implementation
+ * @param {Object} deps.presenter The database presenter implementation
+ */
+export function initialize(deps = {}) {
+  dbAdapter = deps.adapter || null;
+  dbPresenter = deps.presenter || null;
+  
+  console.log('[DB Status Port] Initialized with deps:', {
+    hasAdapter: !!dbAdapter,
+    hasPresenter: !!dbPresenter
+  });
+  
+  return { handleRequest };
+}
 
 // Handle a request to check database status
 export async function handleRequest(req, res, testAdapter) {
   if (req.method === 'GET' && req.url === '/api/status') {
     try {
+      // Lazy load dependencies if not injected
+      if (!dbAdapter || !dbPresenter) {
+        const { db } = !dbAdapter ? await import('../../adapters/db/mongodb.js') : { db: null };
+        const { presenter: defaultPresenter } = !dbPresenter ? await import('../../presenters/db/status.js') : { presenter: null };
+        
+        dbAdapter = dbAdapter || db;
+        dbPresenter = dbPresenter || defaultPresenter;
+      }
+      
+      // Allow test adapter override for testing
+      const adapter = testAdapter || dbAdapter;
       console.log('[DB Port] Using adapter:', testAdapter ? 'test' : 'default');
-      const adapter = testAdapter || db;
       
       // Get basic connection status
       await adapter.connect();
@@ -33,12 +62,19 @@ export async function handleRequest(req, res, testAdapter) {
       console.log('[DB Port] Got comprehensive status:', status);
       
       // Use the presenter to format and deliver the response
-      presenter.present(res, status);
+      dbPresenter.present(res, status);
       
       return true;
     } catch (error) {
       console.log('[DB Port] Got error:', error);
-      presenter.presentError(res, error);
+      
+      // Ensure presenter is available for error case
+      if (!dbPresenter) {
+        const { presenter: defaultPresenter } = await import('../../presenters/db/status.js');
+        dbPresenter = defaultPresenter;
+      }
+      
+      dbPresenter.presentError(res, error);
       return true;
     }
   }

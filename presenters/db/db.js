@@ -1,7 +1,6 @@
-import { Presenter } from '../../ports/interfaces/ports.js';
-import { ResponseHeaders } from '../../ports/core/headers.js';
+import { BasePresenter, getResponseHeaders } from '../base.js';
 
-export class DbPresenter extends Presenter {
+export class DbPresenter extends BasePresenter {
   format(data) {
     return {
       success: true,
@@ -19,25 +18,13 @@ export class DbPresenter extends Presenter {
   }
 
   present(res, data) {
-    const headers = ResponseHeaders.getHeadersFor('application/json');
-    
-    // Ensure X-Content-Type-Options is set
-    if (!headers['X-Content-Type-Options']) {
-      headers['X-Content-Type-Options'] = 'nosniff';
-    }
-    
+    const headers = getResponseHeaders('application/json');
     res.writeHead(200, headers);
     res.end(JSON.stringify(this.format(data)));
   }
 
   presentError(res, error) {
-    const headers = ResponseHeaders.getHeadersFor('application/json');
-    
-    // Ensure X-Content-Type-Options is set
-    if (!headers['X-Content-Type-Options']) {
-      headers['X-Content-Type-Options'] = 'nosniff';
-    }
-    
+    const headers = getResponseHeaders('application/json');
     res.writeHead(500, headers);
     res.end(JSON.stringify(this.formatError(error)));
   }

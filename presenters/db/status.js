@@ -1,7 +1,6 @@
-import { Presenter } from '../../ports/interfaces/ports.js';
-import { ResponseHeaders } from '../../ports/core/headers.js';
+import { BasePresenter, getResponseHeaders } from '../base.js';
 
-export class DbStatusPresenter extends Presenter {
+export class DbStatusPresenter extends BasePresenter {
   format(status) {
     console.log('[DB Presenter] Formatting status:', status);
     
@@ -57,13 +56,13 @@ export class DbStatusPresenter extends Presenter {
   present(res, status) {
     console.log('[DB Presenter] Presenting status');
     const code = status.connected ? 200 : 503;
-    res.writeHead(code, ResponseHeaders.getHeadersFor('application/json'));
+    res.writeHead(code, getResponseHeaders('application/json'));
     res.end(JSON.stringify(this.format(status)));
   }
 
   presentError(res, error) {
     console.log('[DB Presenter] Presenting error');
-    res.writeHead(503, ResponseHeaders.getHeadersFor('application/json'));
+    res.writeHead(503, getResponseHeaders('application/json'));
     res.end(JSON.stringify(this.formatError(error)));
   }
 
