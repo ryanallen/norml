@@ -20,9 +20,9 @@ export function validateVersion(version) {
   return version;
 }
 
-export async function getBuildInfo(configAdapter) {
+export async function getBuildInfo(configAdapter, versionAdapter) {
   return {
-    version: await getVersion(),
+    version: await getVersion(versionAdapter),
     node: process.version,
     timestamp: new Date().toISOString(),
     environment: configAdapter ? configAdapter.get('NODE_ENV') || 'development' : 'development'

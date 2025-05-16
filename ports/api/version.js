@@ -58,7 +58,7 @@ export async function handleVersionRequest(req, res, context = {}) {
     }
   } else if (req.method === 'GET' && req.url === '/api/build-info') {
     try {
-      const result = await getBuildInfo(configAdapter);
+      const result = await getBuildInfo(configAdapter, versionAdapter);
       versionPresenter.present(res, result, requestOrigin);
       return true;
     } catch (error) {
