@@ -1,5 +1,4 @@
 // Version information logic
-import { config } from '../../adapters/env/config.js';
 
 export async function getVersion(versionAdapter) {
   try {
@@ -21,11 +20,11 @@ export function validateVersion(version) {
   return version;
 }
 
-export async function getBuildInfo() {
+export async function getBuildInfo(configAdapter) {
   return {
     version: await getVersion(),
     node: process.version,
     timestamp: new Date().toISOString(),
-    environment: config.get('NODE_ENV') || 'development'
+    environment: configAdapter ? configAdapter.get('NODE_ENV') || 'development' : 'development'
   };
 } 

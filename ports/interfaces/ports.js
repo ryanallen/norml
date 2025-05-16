@@ -94,6 +94,20 @@ export class ConfigPort {
   }
 }
 
+export class ConfigAdapterPort {
+  get(key, defaultValue) {
+    throw new Error('ConfigAdapterPort.get() must be implemented');
+  }
+  
+  set(key, value) {
+    throw new Error('ConfigAdapterPort.set() must be implemented');
+  }
+  
+  getAll() {
+    throw new Error('ConfigAdapterPort.getAll() must be implemented');
+  }
+}
+
 export class StaticGeneratorPort {
   async generateStatic(content) {
     throw new Error('Method not implemented');

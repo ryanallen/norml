@@ -24,6 +24,17 @@ export class Router {
       return await handler(req, res);
     }
     
+    // Check for pattern-based handlers
+    if (req.url.startsWith('/api/')) {
+      // Try version endpoints
+      const handled = await handleVersion(req, res);
+      if (handled) return true;
+      
+      // Try database status endpoints
+      const dbHandled = await handleDb(req, res);
+      if (dbHandled) return true;
+    }
+    
     // If no exact match, try to handle as a static file
     const handled = await handleStaticFile(req, res);
     if (handled) {
@@ -40,5 +51,6 @@ export const router = new Router();
 router.addRoute('GET', '/', handleMainRequest);
 router.addRoute('GET', '/api/status', handleDb);
 router.addRoute('GET', '/api/version', handleVersion);
+router.addRoute('GET', '/api/build-info', handleVersion);
 
 export default router; 
