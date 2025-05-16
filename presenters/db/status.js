@@ -1,104 +1,60 @@
-import { BasePresenter, getResponseHeaders } from '../base.js';
+// Database status presenter
+// Used to format database status response for clients
+
+import { BasePresenter } from '../base.js';
+import { ResponseHeaders } from '../../ports/core/headers.js';
 
 export class DbStatusPresenter extends BasePresenter {
+  /**
+   * Format database status for presentation
+   * @param {Object} status Database status data
+   * @returns {Object} Formatted status
+   */
   format(status) {
-    console.log('[DB Presenter] Formatting status:', status);
-    
-    // Format basic connection status
-    const baseStatus = {
-      status: status.connected ? 'available' : 'unavailable',
-      time: status.timestamp,
-      connection: {
-        poolSize: status.poolSize || 0,
-        availableConnections: status.available || 0,
-        isConnected: status.connected || false
-      }
+    return {
+      ...status,
+      formatted: true,
+      timestamp: new Date().toISOString()
     };
-
-    // Add ping information if available
-    if (status.ping) {
-      baseStatus.ping = {
-        success: status.ping.success,
-        latencyMs: status.ping.latency
-      };
-    }
-
-    // Add server stats if available
-    if (status.stats) {
-      baseStatus.server = {
-        version: status.stats.version,
-        uptime: this.formatUptime(status.stats.uptime),
-        connections: status.stats.connections,
-        memory: this.formatMemory(status.stats.memory)
-      };
-    }
-
-    // Add error information if present
-    if (status.lastError) {
-      baseStatus.lastError = {
-        message: status.lastError.message,
-        time: status.lastError.timestamp || status.timestamp
-      };
-    }
-
-    return baseStatus;
   }
-
+  
+  /**
+   * Format error for presentation
+   * @param {Error} error Error to format
+   * @returns {Object} Formatted error
+   */
   formatError(error) {
-    console.log('[DB Presenter] Formatting error:', error);
     return {
-      status: 'error',
-      message: error.message,
-      time: new Date().toISOString()
+      error: error.message || 'Unknown error',
+      timestamp: new Date().toISOString()
     };
   }
-
-  present(res, status) {
-    console.log('[DB Presenter] Presenting status');
+  
+  /**
+   * Present database status to the client
+   * @param {Object} res Response object
+   * @param {Object} status Status data
+   * @param {string} requestOrigin Optional origin for CORS headers
+   */
+  present(res, status, requestOrigin = null) {
     const code = status.connected ? 200 : 503;
-    res.writeHead(code, getResponseHeaders('application/json'));
-    res.end(JSON.stringify(this.format(status)));
+    const headers = ResponseHeaders.getHeadersFor('application/json', null, requestOrigin);
+    res.writeHead(code, headers);
+    res.end(JSON.stringify(this.format(status), null, 2));
   }
-
-  presentError(res, error) {
-    console.log('[DB Presenter] Presenting error');
-    res.writeHead(503, getResponseHeaders('application/json'));
+  
+  /**
+   * Present an error to the client
+   * @param {Object} res Response object
+   * @param {Error} error Error that occurred
+   * @param {string} requestOrigin Optional origin for CORS headers
+   */
+  presentError(res, error, requestOrigin = null) {
+    const headers = ResponseHeaders.getHeadersFor('application/json', null, requestOrigin);
+    res.writeHead(503, headers);
     res.end(JSON.stringify(this.formatError(error)));
-  }
-
-  // Helper methods
-  formatUptime(seconds) {
-    if (!seconds) return 'unknown';
-    const days = Math.floor(seconds / 86400);
-    const hours = Math.floor((seconds % 86400) / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const parts = [];
-    if (days > 0) parts.push(`${days}d`);
-    if (hours > 0) parts.push(`${hours}h`);
-    if (minutes > 0) parts.push(`${minutes}m`);
-    return parts.join(' ') || '< 1m';
-  }
-
-  formatMemory(mem) {
-    if (!mem) return {};
-    return {
-      resident: this.formatBytes(mem.resident),
-      virtual: this.formatBytes(mem.virtual),
-      mapped: this.formatBytes(mem.mapped)
-    };
-  }
-
-  formatBytes(bytes) {
-    if (!bytes) return '0 B';
-    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-    let value = bytes;
-    let unitIndex = 0;
-    while (value >= 1024 && unitIndex < units.length - 1) {
-      value /= 1024;
-      unitIndex++;
-    }
-    return `${Math.round(value * 100) / 100} ${units[unitIndex]}`;
   }
 }
 
+// Export a singleton instance
 export const presenter = new DbStatusPresenter(); 

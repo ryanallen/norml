@@ -29,14 +29,14 @@ export class Router {
     return this;
   }
 
-  async route(req, res) {
+  async route(req, res, context = {}) {
     const url = new URL(req.url, `http://${req.headers.host}`);
     const key = `${req.method}:${url.pathname}`;
     
     // First check for exact route matches
     const handler = this.routes.get(key);
     if (handler) {
-      return await handler(req, res);
+      return await handler(req, res, context);
     }
     
     // Check for pattern-based handlers
@@ -53,11 +53,11 @@ export class Router {
       }
       
       // Try version endpoints
-      const handled = await versionHandler(req, res);
+      const handled = await versionHandler(req, res, context);
       if (handled) return true;
       
       // Try database status endpoints
-      const dbHandled = await dbHandler(req, res);
+      const dbHandled = await dbHandler(req, res, context);
       if (dbHandled) return true;
     }
     
@@ -67,7 +67,7 @@ export class Router {
       staticFileHandler = handleStaticFile;
     }
     
-    const handled = await staticFileHandler(req, res);
+    const handled = await staticFileHandler(req, res, context);
     if (handled) {
       return true;
     }
@@ -79,44 +79,44 @@ export class Router {
 export const router = new Router();
 
 // Register routes (lazy init of handlers will occur when needed)
-router.addRoute('GET', '/', async (req, res) => {
+router.addRoute('GET', '/', async (req, res, context = {}) => {
   if (!mainHandler) {
     const { handleMainRequest } = await import('../main/handler.js');
     mainHandler = handleMainRequest;
   }
-  return mainHandler(req, res);
+  return mainHandler(req, res, context);
 });
 
-router.addRoute('GET', '/api/status', async (req, res) => {
+router.addRoute('GET', '/api/status', async (req, res, context = {}) => {
   if (!dbHandler) {
     const { handleRequest } = await import('../db/db-status.js');
     dbHandler = handleRequest;
   }
-  return dbHandler(req, res);
+  return dbHandler(req, res, context);
 });
 
-router.addRoute('GET', '/api/version', async (req, res) => {
-  if (!versionHandler) {
-    const { handleVersionRequest } = await import('../api/version.js');
-    versionHandler = handleVersionRequest;
-  }
-  return versionHandler(req, res);
-});
-
-router.addRoute('GET', '/api/build-info', async (req, res) => {
-  if (!versionHandler) {
-    const { handleVersionRequest } = await import('../api/version.js');
-    versionHandler = handleVersionRequest;
-  }
-  return versionHandler(req, res);
-});
-
-router.addRoute('GET', '/api/status/db', async (req, res) => {
+router.addRoute('GET', '/api/status/db', async (req, res, context = {}) => {
   if (!dbHandler) {
     const { handleRequest } = await import('../db/db-status.js');
     dbHandler = handleRequest;
   }
-  return dbHandler(req, res);
+  return dbHandler(req, res, context);
+});
+
+router.addRoute('GET', '/api/version', async (req, res, context = {}) => {
+  if (!versionHandler) {
+    const { handleVersionRequest } = await import('../api/version.js');
+    versionHandler = handleVersionRequest;
+  }
+  return versionHandler(req, res, context);
+});
+
+router.addRoute('GET', '/api/build-info', async (req, res, context = {}) => {
+  if (!versionHandler) {
+    const { handleVersionRequest } = await import('../api/version.js');
+    versionHandler = handleVersionRequest;
+  }
+  return versionHandler(req, res, context);
 });
 
 export default router; 

@@ -1,5 +1,7 @@
 // Version endpoint
 
+import { ResponseHeaders } from '../core/headers.js';
+
 // Store adapter and presenter references for dependency injection
 let versionAdapter = null;
 let versionPresenter = null;
@@ -10,14 +12,14 @@ let configAdapter = null;
  * @param {Object} deps Dependencies object
  * @param {Object} deps.adapter The version adapter implementation
  * @param {Object} deps.presenter The version presenter implementation
- * @param {Object} deps.config The config adapter implementation
+ * @param {Object} deps.config The configuration adapter implementation
  */
 export function initialize(deps = {}) {
   versionAdapter = deps.adapter || null;
   versionPresenter = deps.presenter || null;
   configAdapter = deps.config || null;
   
-  console.log('[Version Port] Initialized with deps:', {
+  console.log('[Version API] Initialized with deps:', {
     hasAdapter: !!versionAdapter,
     hasPresenter: !!versionPresenter,
     hasConfig: !!configAdapter
@@ -26,7 +28,10 @@ export function initialize(deps = {}) {
   return { handleVersionRequest };
 }
 
-export async function handleVersionRequest(req, res) {
+export async function handleVersionRequest(req, res, context = {}) {
+  // Extract the requestOrigin from context
+  const { requestOrigin } = context || {};
+  
   // Lazy load dependencies if not injected
   if (!versionAdapter || !versionPresenter || !configAdapter) {
     const { getVersion, getBuildInfo } = await import('../../logic/version/version.js');
@@ -45,19 +50,19 @@ export async function handleVersionRequest(req, res) {
   if (req.method === 'GET' && req.url === '/api/version') {
     try {
       const result = await getVersion(versionAdapter);
-      versionPresenter.present(res, result);
+      versionPresenter.present(res, result, requestOrigin);
       return true;
     } catch (error) {
-      versionPresenter.presentError(res, error);
+      versionPresenter.presentError(res, error, requestOrigin);
       return true;
     }
   } else if (req.method === 'GET' && req.url === '/api/build-info') {
     try {
       const result = await getBuildInfo(configAdapter);
-      versionPresenter.present(res, result);
+      versionPresenter.present(res, result, requestOrigin);
       return true;
     } catch (error) {
-      versionPresenter.presentError(res, error);
+      versionPresenter.presentError(res, error, requestOrigin);
       return true;
     }
   }

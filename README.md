@@ -12,7 +12,7 @@ A Node.js application implementing RHOMBUS architecture:
 - **H**exagonal ports & adapters
 - **O**ptimal test coverage
 - **M**icroservices
-- **B**ackend logic isolation
+- **B**usiness logic isolation
 - **U**I presenters
 - **S**hipping continuously
 
@@ -159,7 +159,7 @@ Our implementation follows the ports and adapters pattern:
 - API gateway for routing
 - Independent deployability
 
-### Backend Logic
+### Business Logic
 - Pure functions where possible
 - Domain events for side effects
 - No framework dependencies in logic layer

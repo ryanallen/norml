@@ -24,7 +24,7 @@ export function initialize(deps = {}) {
 }
 
 // Handle a request to check database status
-export async function handleRequest(req, res, testAdapter) {
+export async function handleRequest(req, res, context = {}, testAdapter) {
   if (req.method === 'GET' && (req.url === '/api/status' || req.url === '/api/status/db')) {
     try {
       // Lazy load dependencies if not injected
@@ -61,8 +61,11 @@ export async function handleRequest(req, res, testAdapter) {
 
       console.log('[DB Port] Got comprehensive status:', status);
       
+      // Extract request origin from context
+      const { requestOrigin } = context || {};
+      
       // Use the presenter to format and deliver the response
-      dbPresenter.present(res, status);
+      dbPresenter.present(res, status, requestOrigin);
       
       return true;
     } catch (error) {
@@ -74,7 +77,10 @@ export async function handleRequest(req, res, testAdapter) {
         dbPresenter = defaultPresenter;
       }
       
-      dbPresenter.presentError(res, error);
+      // Extract request origin from context
+      const { requestOrigin } = context || {};
+      
+      dbPresenter.presentError(res, error, requestOrigin);
       return true;
     }
   }

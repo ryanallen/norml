@@ -35,9 +35,10 @@ handlers:
       X-Content-Type-Options: "nosniff"
       X-Frame-Options: "SAMEORIGIN"
       Cache-Control: "no-store, must-revalidate"
-      Access-Control-Allow-Origin: "*"
+      # CORS headers are dynamically set per request - these are fallbacks
+      # The actual Access-Control-Allow-Origin will be set in the server code
       Access-Control-Allow-Methods: "GET, POST, OPTIONS"
-      Access-Control-Allow-Headers: "Content-Type"
+      Access-Control-Allow-Headers: "Content-Type, Origin"
       Access-Control-Expose-Headers: "Content-Length, Content-Type"
 
 # Environment variables should be set using Secret Manager
@@ -45,32 +46,44 @@ handlers:
 `;
 
 /**
- * Writes the app.yaml file to the root directory
- * Required by GCP App Engine deployment
+ * App YAML manager
  */
-export function writeAppYaml() {
-  try {
-    fs.writeFileSync(appYamlPath, appYamlContent, 'utf8');
-    return true;
-  } catch (error) {
-    console.error('[AppYaml] Error writing app.yaml:', error);
-    return false;
+export class AppYamlAdapter {
+  constructor() {
+    this.content = appYamlContent;
+  }
+  
+  /**
+   * Write configuration to app.yaml
+   * @returns {boolean} Whether the write was successful
+   */
+  write() {
+    try {
+      fs.writeFileSync(appYamlPath, appYamlContent, 'utf8');
+      console.log('[GCP Adapter] App YAML configuration written successfully');
+      return true;
+    } catch (error) {
+      console.error('[GCP Adapter] Failed to write App YAML:', error);
+      return false;
+    }
+  }
+  
+  /**
+   * Read current app.yaml configuration
+   * @returns {string|null} The YAML content or null on error
+   */
+  read() {
+    try {
+      if (fs.existsSync(appYamlPath)) {
+        return fs.readFileSync(appYamlPath, 'utf8');
+      }
+      return null;
+    } catch (error) {
+      console.error('[GCP Adapter] Failed to read App YAML:', error);
+      return null;
+    }
   }
 }
 
-/**
- * Reads the current app.yaml file from the root directory
- */
-export function readAppYaml() {
-  try {
-    return fs.readFileSync(appYamlPath, 'utf8');
-  } catch (error) {
-    return null;
-  }
-}
-
-export const appYaml = {
-  write: writeAppYaml,
-  read: readAppYaml,
-  content: appYamlContent
-}; 
+// Export a singleton instance
+export const appYaml = new AppYamlAdapter(); 

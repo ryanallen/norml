@@ -39,9 +39,15 @@ export class ServerPort {
     this.server = http.createServer(async (req, res) => {
       console.log('[Server Port] Request:', req.method, req.url);
       
+      // Extract origin from request - crucial for CORS handling
+      const requestOrigin = req.headers.origin || null;
+      if (requestOrigin) {
+        console.log('[Server Port] Request Origin:', requestOrigin);
+      }
+      
       // Handle CORS preflight requests
       if (req.method === 'OPTIONS') {
-        const headers = ResponseHeaders.getHeadersFor('text/plain');
+        const headers = ResponseHeaders.getPreflightHeaders(requestOrigin);
         // Ensure X-Content-Type-Options is set
         if (!headers['X-Content-Type-Options']) {
           headers['X-Content-Type-Options'] = 'nosniff';
@@ -53,12 +59,12 @@ export class ServerPort {
       
       try {
         // Use the router to handle the request
-        const handled = await router.route(req, res);
+        const handled = await router.route(req, res, { requestOrigin });
         
         if (!handled) {
           // If no handler wants this request, send 404
           console.log('[Server Port] No handler found - sending 404');
-          const headers = ResponseHeaders.getHeadersFor('application/json');
+          const headers = ResponseHeaders.getHeadersFor('application/json', null, requestOrigin);
           // Ensure X-Content-Type-Options is set
           if (!headers['X-Content-Type-Options']) {
             headers['X-Content-Type-Options'] = 'nosniff';
@@ -73,7 +79,7 @@ export class ServerPort {
         // Handle any errors that occur during request processing
         console.error('[Server Port] Error handling request:', error);
         console.error('[Server Port] Error stack:', error.stack);
-        const headers = ResponseHeaders.getHeadersFor('application/json');
+        const headers = ResponseHeaders.getHeadersFor('application/json', null, requestOrigin);
         // Ensure X-Content-Type-Options is set
         if (!headers['X-Content-Type-Options']) {
           headers['X-Content-Type-Options'] = 'nosniff';
