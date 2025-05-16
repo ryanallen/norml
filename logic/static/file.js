@@ -8,6 +8,9 @@
  * @param {string} request.mimeType - MIME type of the file
  * @returns {Object} Result containing success status, headers, and error info
  */
+
+import crypto from 'node:crypto';
+
 export function processStaticFileRequest(fileInfo) {
   const { path, exists, mimeType } = fileInfo;
   
@@ -109,6 +112,53 @@ export function shouldIncludeCharset(mimeType) {
 export function getSecurityHeaders() {
   return {
     'X-Content-Type-Options': 'nosniff',
-    'X-Frame-Options': 'SAMEORIGIN'
+    'X-Frame-Options': 'SAMEORIGIN',
+    'Content-Security-Policy': getContentSecurityPolicy()
   };
+}
+
+/**
+ * Generates a secure Content Security Policy
+ * Replaces Cloudflare's default policy with a more secure version
+ * 
+ * SECURITY IMPLEMENTATION NOTES:
+ * Previous Cloudflare headers had security issues:
+ * - 'unsafe-inline' in script-src and style-src: Major XSS risk
+ * - 'unsafe-eval' in script-src: Allows code injection
+ * 
+ * CLOUDFLARE UPDATE INSTRUCTIONS:
+ * Replace existing Cloudflare CSP headers with:
+ * default-src 'self'; 
+ * script-src 'self'; 
+ * style-src 'self'; 
+ * connect-src 'self' https://norml-459701.uc.r.appspot.com;
+ * object-src 'none'; 
+ * base-uri 'none'; 
+ * frame-ancestors 'none'
+ * 
+ * @returns {string} - CSP header value
+ */
+export function getContentSecurityPolicy() {
+  // Generate random nonce for inline scripts and styles
+  const scriptNonce = crypto.randomUUID();
+  const styleNonce = crypto.randomUUID();
+  
+  return [
+    // Restrictive default policy
+    "default-src 'self'",
+    
+    // Script sources - remove unsafe-inline and unsafe-eval
+    `script-src 'self' 'nonce-${scriptNonce}'`,
+    
+    // Style sources - remove unsafe-inline
+    `style-src 'self' 'nonce-${styleNonce}'`,
+    
+    // Keep existing connect-src
+    "connect-src 'self' https://norml-459701.uc.r.appspot.com",
+    
+    // Additional hardening
+    "object-src 'none'",
+    "base-uri 'none'",
+    "frame-ancestors 'none'"
+  ].join('; ');
 } 

@@ -1,4 +1,5 @@
 import { BasePresenter, getResponseHeaders } from '../base.js';
+import { getContentSecurityPolicy } from '../../logic/static/file.js';
 
 /**
  * HTML Presenter for formatting content as HTML
@@ -7,15 +8,19 @@ export class HtmlPresenter extends BasePresenter {
   /**
    * Format the data as HTML
    * @param {Object} data - The data to format
+   * @param {Object} options - Additional options
+   * @param {string} options.scriptNonce - Nonce for script tags
+   * @param {string} options.styleNonce - Nonce for style tags
    * @returns {string} HTML string
    */
-  format(data) {
+  format(data, options = {}) {
     if (!data) {
       return this.formatError(new Error('No data provided'));
     }
     
     try {
       const { title, description, repoUrl, features } = data;
+      const { scriptNonce, styleNonce } = options;
       
       // Features section HTML
       const featuresHtml = features ? features.map(feature => `
@@ -48,7 +53,7 @@ export class HtmlPresenter extends BasePresenter {
   
   ${featuresHtml}
 
-  <script>
+  <script${scriptNonce ? ` nonce="${scriptNonce}"` : ''}>
     // Pre-define features in a global variable for the status checker
     window.appFeatures = ${featuresJson};
   </script>
@@ -82,19 +87,43 @@ export class HtmlPresenter extends BasePresenter {
    * Present data to the response
    * @param {Object} res - HTTP response object
    * @param {any} data - Data to present
+   * @param {string} requestOrigin - Optional origin for CORS headers
    */
-  present(res, data) {
-    res.writeHead(200, getResponseHeaders('text/html'));
-    res.end(this.format(data));
+  present(res, data, requestOrigin = null) {
+    // Get CSP policy
+    const policy = getContentSecurityPolicy();
+    
+    // Extract nonces from the policy
+    const scriptNonce = policy.match(/script-src[^;]*'nonce-([^']+)'/)?.[1];
+    const styleNonce = policy.match(/style-src[^;]*'nonce-([^']+)'/)?.[1];
+    
+    // Add CSP header to response
+    const headers = {
+      ...getResponseHeaders('text/html'),
+      'Content-Security-Policy': policy
+    };
+    
+    res.writeHead(200, headers);
+    res.end(this.format(data, { scriptNonce, styleNonce }));
   }
   
   /**
    * Present error to the response
    * @param {Object} res - HTTP response object
    * @param {Error} error - Error to present
+   * @param {string} requestOrigin - Optional origin for CORS headers
    */
-  presentError(res, error) {
-    res.writeHead(500, getResponseHeaders('text/html'));
+  presentError(res, error, requestOrigin = null) {
+    // Get CSP policy
+    const policy = getContentSecurityPolicy();
+    
+    // Add CSP header to response
+    const headers = {
+      ...getResponseHeaders('text/html'),
+      'Content-Security-Policy': policy
+    };
+    
+    res.writeHead(500, headers);
     res.end(this.formatError(error));
   }
-} 
+}
